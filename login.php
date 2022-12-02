@@ -1,3 +1,26 @@
+<?php
+    session_start();
+    include('./config/ketnoi.php');
+    $error = [];
+    if(isset($_POST['submit'])){
+        $username = $_POST['username'];
+        $pwd = $_POST['pwd'];
+
+        if(empty($username)){
+            $error['username'] = 'Bạn chưa nhập tên tài khoản';
+        }
+        if(empty($pwd)){
+            $error['pwd'] = 'Bạn chưa nhập password';
+        }
+
+        //Tạo session đây là phương pháp đối phó chưa có sài ổn được
+        $_SESSION['idStudent'] = '1239999';
+        if(empty($error)){
+            header("location: ./student/profile.php"); 
+        }
+    }
+
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -38,16 +61,30 @@
                     </div>
                     <div class="or"></div>
                     <div class="default-login">
-                        <form action="" method="post">
+                        <form action="" method="post" role="form">
                             <div class="mb-3 user">
                                 <label for="username" class="form-label">Tên đăng nhập</label>
-                                <input type="email" class="form-control" id="username" placeholder="name@example.com">
+                                <input type="text" name = "username" class="form-control" id="username" placeholder="name@example.com">
+                                <div class="has-error">
+                                    <span> 
+                                        <?php 
+                                            echo isset($error['username']) ? $error['username'] : '';
+                                        ?>
+                                    </span>
+                                </div>
                             </div>
                             <div class="mb-3 pwd">
                                 <label for="password" class="form-label">Mật khẩu</label>
                                 <div>
-                                    <input type="password" class="form-control" id="password">
-                                    <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                    <input type="password" name = "pwd" class="form-control" id="password">
+                                    <i class="fa fa-eye-slash" aria-hidden="true" id = "togglePassword"></i>
+                                </div>
+                                <div class="has-error">
+                                    <span> 
+                                        <?php 
+                                            echo isset($error['pwd']) ? $error['pwd'] : '';
+                                        ?>
+                                    </span>
                                 </div>
                             </div>
                             <div class="row">
@@ -57,9 +94,9 @@
                                 </div>
                                 <div class="col forget-pwd"><a href="#">Quên mật khẩu ?</a></div>
                             </div>
-                            <div class="button button-color-blue" onclick="window.location.assign('./home.php');">
+                            <button class="button button-color-blue" name ="submit" type = "submit" onclick="window.location.assign('./home.php');">
                                 ĐĂNG NHẬP
-                            </div>
+                            </button>
                             <div class="register">
                                 <span>Nếu bạn chưa có tài khoản? <a href="./register.php">Đăng ký</a></span>
                             </div>
@@ -69,10 +106,27 @@
             </div>
         </div>
     </div>
-    <?php require "./partial/footer.php" 
-        ?>
+    <?php require "./partial/footer.php" ?>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script>
+        const togglePassword = document
+            .querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+        togglePassword.addEventListener('click', () => {
+  
+            // Toggle the type attribute using
+            // getAttribure() method
+            const type = password
+                .getAttribute('type') === 'password' ?
+                'text' : 'password';
+                
+            password.setAttribute('type', type);
+
+            // Toggle the eye and bi-eye icon
+            togglePassword.classList.toggle('fa-eye');
+        });
+    </script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>

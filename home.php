@@ -1,3 +1,8 @@
+<?php 
+    session_start();
+    include('./config/ketnoi.php');
+    global $con;
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -51,95 +56,44 @@
           <div class="title">
               TOP COURSE
           </div>
+
           <div class="row">
-            <div class="course-item col-3">
-              <div class="image"></div>
-              <div class="text">
-                <div class="price">12.000.000</div>
-                <div class="title-course">The Professional Art Masterclass</div>
-                <div class="description-course">
-                    <div class="author">Michael Palmisano</div>
-                    <div class="more">Xem Thêm >>></div>
-                </div>
-              </div>
-            </div>
-            <div class="course-item col-3">
-              <div class="image"></div>
-              <div class="text">
-                <div class="price">12.000.000</div>
-                <div class="title-course">The Professional Art Masterclass</div>
-                <div class="description-course">
-                    <div class="author">Michael Palmisano</div>
-                    <div class="more">Xem Thêm >>></div>
-                </div>
-              </div>
-            </div>
-            <div class="course-item col-3">
-              <div class="image"></div>
-              <div class="text">
-                <div class="price">12.000.000</div>
-                <div class="title-course">The Professional Art Masterclass</div>
-                <div class="description-course">
-                    <div class="author">Michael Palmisano</div>
-                    <div class="more">Xem Thêm >>></div>
-                </div>
-              </div>
-            </div>
-            <div class="course-item col-3">
-              <div class="image"></div>
-              <div class="text">
-                <div class="price">12.000.000</div>
-                <div class="title-course">The Professional Art Masterclass</div>
-                <div class="description-course">
-                    <div class="author">Michael Palmisano</div>
-                    <div class="more">Xem Thêm >>></div>
-                </div>
-              </div>
-            </div>
-            <div class="course-item col-3">
-              <div class="image"></div>
-              <div class="text">
-                <div class="price">12.000.000</div>
-                <div class="title-course">The Professional Art Masterclass</div>
-                <div class="description-course">
-                    <div class="author">Michael Palmisano</div>
-                    <div class="more">Xem Thêm >>></div>
-                </div>
-              </div>
-            </div>
-            <div class="course-item col-3">
-              <div class="image"></div>
-              <div class="text">
-                <div class="price">12.000.000</div>
-                <div class="title-course">The Professional Art Masterclass</div>
-                <div class="description-course">
-                    <div class="author">Michael Palmisano</div>
-                    <div class="more">Xem Thêm >>></div>
-                </div>
-              </div>
-            </div>
-            <div class="course-item col-3">
-              <div class="image"></div>
-              <div class="text">
-                <div class="price">12.000.000</div>
-                <div class="title-course">The Professional Art Masterclass</div>
-                <div class="description-course">
-                    <div class="author">Michael Palmisano</div>
-                    <div class="more">Xem Thêm >>></div>
-                </div>
-              </div>
-            </div>
-            <div class="course-item col-3">
-              <div class="image"></div>
-              <div class="text">
-                <div class="price">12.000.000</div>
-                <div class="title-course">The Professional Art Masterclass</div>
-                <div class="description-course">
-                    <div class="author">Michael Palmisano</div>
-                    <div class="more">Xem Thêm >>></div>
-                </div>
-              </div>
-            </div>
+          <?php 
+                $i = 0;
+                $output='';
+                //$sqlcourse = mysqli_query($con,"SELECT * FROM course");
+                $sqlcourse = $con->query("SELECT * FROM course");
+                //$rowcourse = mysqli_fetch_assoc($sqlcourse);
+                
+                if ($sqlcourse->num_rows > 0) {
+                  // output data of each row
+                  while($rowcourse = $sqlcourse->fetch_assoc()) {
+                    $courseid = $rowcourse["course_id"];
+                    //var_dump("id: " . $rowcourse["course_id"]. " - Name: " . $rowcourse["name"]. "<br>");
+                    $sqlteach = $con->query("SELECT DISTINCT * FROM teach WHERE course_id = '{$courseid}'");
+                    $rowteach = $sqlteach->fetch_assoc();
+                    $sqlteacher = $con->query("SELECT DISTINCT * FROM teacher, staff WHERE teacher_id = '{$rowteach['teacher_id']}' AND teacher_id = staff_id");
+                    $rowteacher = $sqlteacher->fetch_assoc();
+                    $i++;
+                    $output .= '
+                      <div class="course-item col-3">
+                        <div class="image"> 
+                          <img src="./images/course'. $i .'.jpg" alt="" style ="width: 100% !important">
+                        </div>
+                        <div class="text">
+                          <div class="price">'.$rowcourse['fee'].'$</div>
+                          <div class="title-course">'.$rowcourse['name'].'</div>
+                          <div class="description-course">
+                              <div class="author">'.$rowteacher['name'].'</div>
+                              <div class="more">Xem Thêm >>></div>
+                          </div>
+                        </div>
+                      </div>';
+                      if($i> 7)break;
+                    }
+                    echo $output;
+                  }
+                ?>
           </div>
       </div>
       <div class="counter">
@@ -179,38 +133,29 @@
       <div class="instructor">
         <div class="title">OUSTANDING INSTRUCTOR</div>
           <div class="row">
-            <div class="col-3 item">
-              <div class="image">
-                <img src="./images/student-1.png" alt="">
-              </div>
-              <div class="text">
-                <div class="name">John S.Sergent</div>
-              </div>
-            </div>
-            <div class="col-3 item">
-              <div class="image">
-                <img src="./images/student-2.png" alt="">
-              </div>
-              <div class="text">
-                <div class="name">John S.Sergent</div>
-              </div>
-            </div>
-            <div class="col-3 item">
-              <div class="image">
-                <img src="./images/student-3.png" alt="">
-              </div>
-              <div class="text">
-                <div class="name">John S.Sergent</div>
-              </div>
-            </div>
-            <div class="col-3 item">
-              <div class="image">
-                <img src="./images/student-4.png" alt="">
-              </div>
-              <div class="text">
-                <div class="name">John S.Sergent</div>
-              </div>
-            </div>
+            <?php 
+               $i = 0;
+               $output='';
+               //$sqlcourse = mysqli_query($con,"SELECT * FROM course");
+               $sqlteacher = $con->query("SELECT name FROM teacher, staff WHERE teacher.teacher_id = staff.staff_id");
+               if ($sqlteacher->num_rows > 0) {
+                // output data of each row
+                while($rowteacher = $sqlteacher->fetch_assoc()) {
+                  $i++;
+                  $output .= '
+                    <div class="col-3 item">
+                      <div class="image">
+                        <img src="./images/teacher'. $i .'.png" alt="">
+                      </div>
+                      <div class="text">
+                        <div class="name">'.$rowteacher['name'].'</div>
+                      </div>
+                    </div>';
+                    if($i> 3)break;
+                }
+                echo $output;
+              }
+            ?>
           </div>
       </div>
       <div class="letter">
