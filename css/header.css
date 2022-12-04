@@ -1,0 +1,83 @@
+.header {
+    margin: auto;
+    color: white;
+}
+.header .button-bar {
+    justify-content: end;
+    align-items: center;
+    margin-right: 10px;
+}
+.header .logo {
+    display: flex;
+    align-items: center;
+    font-size: var(--title-text);
+    font-weight: 700;
+}
+.header .button-bar div{
+    font-size: var(--default-text);
+    font-family: 'Inter' !important;
+}
+.header .button-bar div:not(:last-child){
+    margin-right: 25px;
+}
+.search-wrapper {
+    width: 70%;
+    margin: auto;
+    position: relative;
+}
+.search-wrapper input[type = search]{
+    width: 100%;
+    border-radius: 62.84px;
+    background-color: white;
+}
+.search-wrapper iconify-icon {
+    position: absolute;
+    right: 12.09px;
+    font-size: 25px;
+    color: black;
+}
+.search-wrapper button {
+    position: absolute;
+    right: 0;
+    border-radius:62.84px ;
+    color: white;
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+}
+.search-wrapper button:hover {
+    color: var(--main-color);
+    background-color: white;
+    border-color: var(--main-color);
+}
+
+.button-bar .user {
+    width: 22px;
+    height: 22px;
+    border-radius: 100%;
+    background-color: gray;
+}
+.header .button-bar .user  ul{
+    position: absolute;
+    top: 50px;
+    right: 0;
+    z-index: 10;
+    font-size: 16px;
+    padding: 0 15px;
+    width: 200px;
+    display: none;
+}
+.header .button-bar .user:hover ul, .appear {
+    display: block !important;
+}
+.header .button-bar .user ul li {
+    padding: 10px;
+    text-align: end;
+    background-color: white;
+    color: black;
+}
+.header .button-bar .user ul li:not(:first-child) {
+    border-top: 1px solid #d9d9d9;
+}
+.header .button-bar .user ul li:hover {
+    background-color: #d9d9d9;
+}

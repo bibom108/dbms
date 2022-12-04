@@ -1,0 +1,28 @@
+.header {
+    background-image: linear-gradient(to bottom right, #10203F, #003294, #91DDF9 );
+}
+.header .button-bar .user  ul{
+    position: absolute;
+    top: 50px;
+    right: 0;
+    z-index: 10;
+    font-size: 16px;
+    padding: 0 15px;
+    width: 200px;
+    display: none;
+}
+.header .button-bar .user:hover ul, .appear {
+    display: block !important;
+}
+.header .button-bar .user ul li {
+    padding: 10px;
+    text-align: end;
+    background-color: white;
+    color: black;
+}
+.header .button-bar .user ul li:not(:first-child) {
+    border-top: 1px solid #d9d9d9;
+}
+.header .button-bar .user ul li:hover {
+    background-color: #d9d9d9;
+}
