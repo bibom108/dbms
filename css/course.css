@@ -1,9 +1,13 @@
 .course-item-horizontal {
-    max-width: 874px;
-    margin: 5px auto;
+  width: 874px !important;
+  margin: 5px auto;
+}
+.course {
+  display: flex;
+  flex-direction: column !important;
 }
 .footer {
-    background-color: white !important;
-    padding: 80px 0;    
-    color: var(--primary-color) !important;   
+  background-color: white !important;
+  padding: 80px 0;
+  color: var(--primary-color) !important;
 }

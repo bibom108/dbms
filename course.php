@@ -1,4 +1,8 @@
-
+<?php 
+    session_start();
+    include('./config/admin.php');
+    global $con;
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -26,63 +30,108 @@
   <body>
     <div class="wrapper">
         <div class="landing-1">
-            <?php require "./partial/header-unlogin.php" ?>
-
-            <div class="row content" style="margin: auto;">
-                <h2 style="text-align: center; width: 100%; color: white; margin: 10px 0;">Khoá học ""</h2>
+            <?php 
+            if (isset($_SESSION['idStudent'])) {
+                require "./partial/header-logined.php"; 
+            }
+            else require "./partial/header-unlogin.php";
+            ?>
+            <div class="content course" style="margin: auto;">
+                <h2 style="text-align: center; width: 100%; color: white; margin: 10px 0;"></h2>
                 <?php 
-                    $output = '';
-                    $output .='<div class="card card-body mt-3 course-item-horizontal">
-                    <div class="media align-items-center text-center text-lg-left flex-column flex-lg-row">
-                        <div class="mr-2 mb-3 mb-lg-0"> <img src="#" width="150" height="150" alt=""> </div>
-                        <div class="media-body">
-                            <h6 class="media-title font-weight-semibold"> <a href="#" data-abc="true">ID Khóa Học:</a> </h6>
-                            <ul class="list-inline list-inline-dotted mb-3 mb-lg-2">
-                                <li class="list-inline-item"><a href="#" class="text-muted" data-abc="true">Cấp độ:</a></li>
-                                <li class="list-inline-item"><a href="#" class="text-muted" data-abc="true"></a></li>
-                            </ul>
-                            <p class="mb-3">Thời lượng: </p>
-                            <p class="mb-3">Ngày Bắt Đầu: </p>
-                            <p class="mb-3">Giờ Học:</p>
-                            <ul class="list-inline list-inline-dotted mb-0">
-                                <li class="list-inline-item">Bấm vào đây để xem thêm <i id="myBtn"class="fas fa-eye showdetail"></i></li>
-                                <div id="myModal" class="modal">
-                                    <!-- Modal content -->
-                                    <div class="modal-content" style="width:40%" >
-                                        <div class="modal-header">
-                                            <h3>Teacher</h3>
-                                            <span class="close">&times;</span>
-                                            </div>
-                                            <div class="modal-body">
-                                            <p>Email:</p>
-                                            <p>Giới tính:</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                            <h3></h3>
+                    $sqlcourse = $con->query("SELECT * FROM course");
+                    if ($sqlcourse->num_rows > 0) {
+                        $i = 0;
+                        $output ='';
+                        while($rowcourse = $sqlcourse->fetch_assoc()){
+                           $check = 0;
+                            $i++;
+                            $output .='<div class="card card-body mt-3 course-item-horizontal">
+                                <div class="media align-items-center text-center text-lg-left flex-column flex-lg-row">
+                                    <div class="mr-2 mb-3 mb-lg-0"> <img src="./images/course'.$i.'.jpg" width="150" height="150" alt=""> </div>
+                                    <div class="media-body">
+                                        <h6 class="media-title font-weight-semibold"> <a href="#" data-abc="true">ID Khóa Học: '.$rowcourse['course_id'].'</a> </h6>
+                                        <ul class="list-inline list-inline-dotted mb-3 mb-lg-2">
+                                            <li class="list-inline-item"><a href="#" class="text-muted" data-abc="true">Cấp độ: '.$rowcourse['level'].'</a></li>
+                                            <li class="list-inline-item"><a href="#" class="text-muted" data-abc="true"></a></li>
+                                        </ul>
+                                        <p class="mb-3">Thời lượng:  '.$rowcourse['length'].'</p>
+                                        <p class="mb-3">Ngày Bắt Đầu: '.$rowcourse['start_date'].'</p>
+                                        <p class="mb-3">Giờ Học: '.$rowcourse['time'].'</p>
+                                    </div>
+                                    <div class="mt-3 mt-lg-0 ml-lg-3 text-center">
+                                        <h3 class="mb-0 font-weight-semibold">$80000</h3>
+                                        <div> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> </div>
+                                        <div class="text-muted">
+                                            Đánh giá của học viên <i class="fas fa-eye showrate"></i>
                                         </div>
+                                        <div class="text-muted show-rate" style="display:none"></div>
+                                        <form class="form-submit" action"addcourse.php">
+                                            <input type="hidden" name="idcourse" id="idcourse" value="">';
+                            if (isset($_SESSION['idStudent'])) {
+                                $sqlstudy = $con->query("SELECT study.course_id FROM `study` 
+                                INNER JOIN student ON student.student_id = study.student_id 
+                                WHERE study.student_id = '{$_SESSION['idStudent']}'
+                                ");
+                                if($sqlstudy->num_rows > 0 ){
+                                    while($rowstudy = $sqlstudy->fetch_assoc()){
+                                        if($rowcourse['course_id'] == $rowstudy['course_id']){
+                                            $output.='<button type="submit" disabled class="btn btn-success text-white mt-2 insertcourse"> Khoá học đã đăng ký </button></form>
+                                            </div>
+                                        </div>
+                                    </div>';
+                                            $check = 1;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            if($check == 0)$output.='<button type="button" data-toggle="modal" data-target="#createModal" style="color: #fff" class="btn btn-warning text-white mt-2 insertcourse"> Đăng Ký Khóa Học </button>
+                                        </form>
                                     </div>
                                 </div>
-                            </ul>
-                        </div>
-                        <div class="mt-3 mt-lg-0 ml-lg-3 text-center">
-                            <h3 class="mb-0 font-weight-semibold">$80000</h3>
-                            <div> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> </div>
-                            <div class="text-muted">
-                                Đánh giá của học viên <i class="fas fa-eye showrate"></i>
-                            </div>
-                            <div class="text-muted show-rate" style="display:none"></div>
-                            <form class="form-submit" action"addcourse.php">
-                                <input type="hidden" name="idcourse" id="idcourse" value="">
-                                <button type="submit" name="addcourse" class="btn btn-warning text-white mt-2 insertcourse"> Đăng Ký Khóa Học </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>';
-                    echo $output;
+                            </div>';
+                        }
+                        echo $output;
+                    }
+
                 ?>
             </div>
         </div>
     </div>
+          <!-- Create Request Modal -->
+    <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="createModalTitle">Tạo Đánh Giá</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="" method="post">
+                <div class="form-group">
+                  <label for="inputName">Họ và Tên</label>
+                  <input type="text" class="form-control" id="inputName" placeholder="Hồ Hoàng Huy">
+                </div>
+                <div class="form-group">
+                  <label for="inputID">ID Khoá Học</label>
+                  <input type="number" class="form-control" id="inputEmail" placeholder="">
+                </div>
+                <div class="form-group">
+                  <label for="inputText">Nội dung</label>
+                  <input type="text" style="height: 200px" class="form-control" id="inputText" placeholder="">
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
     <?php require "./partial/footer.php" 
         ?>
     <!-- Optional JavaScript -->
