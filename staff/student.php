@@ -1,8 +1,21 @@
 <?php
     session_start();
     include('../config/ketnoi.php');
-
+    // định lọc sinh viên dưới 18 và trên 18 tuổi mà hong biết đường làm :'(
     if (true) {
+        $sqlstudent =  $con->query("SELECT * FROM student ");
+        $rowstudent = $sqlstudent->fetch_assoc();
+        $bday = new DateTime($rowstudent['dob']); // Your date of birth
+        $today = new Datetime(date('y-m-d'));
+        $diff = $today->diff($bday);
+        if($diff->y >= 18){
+            $sqlstudentcontact = mysqli_query($con, "SELECT * FROM studentt18");
+            $rowstudentcontact = mysqli_fetch_assoc($sqlstudentcontact);
+        }
+        else{
+            $sqlstudentcontact = mysqli_query($con, "SELECT * FROM supervisor");
+            $rowstudentcontact = mysqli_fetch_assoc($sqlstudentcontact);
+        }
     }
     else {
         header('Location:../login.php');
@@ -54,6 +67,19 @@
                     <div class="col-sm-12">
                         <div class="white-box">
                             <h3 class="box-title">Thông Tin Học Viên</h3>
+                            <div class="course-search">
+                              <form action="mycourse.php?action=search" method="post" id = "product-search-form">
+                                  <fieldset>
+                                      <legend>Lọc khoá học</legend>
+                                        <select name="status" id="status">
+                                          <option value="">All</option>
+                                          <option value="In progress">In Progress</option>
+                                          <option value="Finished">Finished</option>
+                                        </select>
+                                      <input type="submit" value="Lọc" />
+                                  </fieldset>
+                              </form>
+                            </div>
                             <div class="table-responsive contain-admin__table" >
                                 <table class="table text-nowrap"  id="editable_table" >
                                     <thead>

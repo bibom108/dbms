@@ -3,7 +3,6 @@
     include('../config/admin.php');
 
     if (isset($_SESSION['idStudent'])) {
-        $sqlteacher = $con->query("SELECT name FROM teacher, staff WHERE teacher.teacher_id = staff.staff_id");
         $sqlstudent =  $con->query("SELECT * FROM student WHERE student_id = '{$_SESSION['idStudent']}'");
         $rowstudent = $sqlstudent->fetch_assoc();
         $bday = new DateTime($rowstudent['dob']); // Your date of birth

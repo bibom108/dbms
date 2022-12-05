@@ -104,7 +104,7 @@
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="createModalTitle">Tạo Đánh Giá</h5>
+              <h5 class="modal-title" id="createModalTitle">Đăng ký khoá học</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -112,22 +112,26 @@
             <div class="modal-body">
               <form action="" method="post">
                 <div class="form-group">
-                  <label for="inputName">Họ và Tên</label>
+                  <label for="inputName">Tên ngân hàng</label>
                   <input type="text" class="form-control" id="inputName" placeholder="Hồ Hoàng Huy">
                 </div>
                 <div class="form-group">
-                  <label for="inputID">ID Khoá Học</label>
+                  <label for="inputID">Số thẻ</label>
                   <input type="number" class="form-control" id="inputEmail" placeholder="">
                 </div>
                 <div class="form-group">
-                  <label for="inputText">Nội dung</label>
-                  <input type="text" style="height: 200px" class="form-control" id="inputText" placeholder="">
+                  <label for="inputDate">Ngày phát hành</label>
+                  <input type="date" class="form-control" id="inputDate" placeholder="">
+                </div>
+                <div class="form-group">
+                  <label for="inputNameof">Tên chủ thẻ</label>
+                  <input type="text" class="form-control" id="inputNameof" placeholder="Hồ Hoàng Huy">
                 </div>
               </form>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Save changes</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">HUỶ THANH TOÁN</button>
+              <button type="button" class="btn btn-primary">THANH TOÁN</button>
             </div>
           </div>
         </div>
