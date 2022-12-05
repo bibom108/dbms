@@ -3,6 +3,18 @@
     include('../config/ketnoi.php');
 
     if (true) {
+      //Kiểm tra action và thực hiện lọc
+      if(!empty($_GET['action']) && $_GET['action'] == 'search' && !empty($_POST)){
+        $_SESSION['course_filter'] = $_POST;
+      }
+      if(!empty($_SESSION['course_filter'])){
+        $where = '';
+        foreach($_SESSION['course_filter'] as $field =>$value){
+          if(!empty($value)){
+            $where .= (!empty($where)) ? " AND "."`".$field."` LIKE '%".$value."%'": "`".$field."` LIKE '%".$value."%'";
+          }
+        }
+      }
     }
     else {
         header('Location:../login.php');
@@ -11,6 +23,23 @@
           MỤC ĐÍCH PAGE NÀY
           SHOW TẤT CẢ CÁC KHOÁ HỌC HIỆN CÓ TRONG HỆ THỐNG
     */
+    if(!empty($where)){
+      $sqlcourse =  $con->query("SELECT * FROM course 
+      INNER JOIN(
+        SELECT * FROM schedule
+      ) AS temp
+      ON temp.course_id = course.course_id
+      WHERE (".$where.");
+    ");
+    }
+    else {
+      $sqlcourse =  $con->query("SELECT * FROM course 
+      INNER JOIN(
+        SELECT * FROM schedule
+      ) AS temp
+      ON temp.course_id = course.course_id
+    ");
+    }
 ?>
 <!doctype html>
 <html lang="en">
@@ -55,11 +84,21 @@
                     <div class="col-sm-12">
                         <div class="white-box">
                           <div class="title row">
-                            <h3 class="box-title">Yêu Cầu</h3>
+                            <h3 class="box-title">Khoá học</h3>
                             <!-- Button trigger modal -->                          
                             <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createModal">
-                              <iconify-icon icon="material-symbols:add-box"></iconify-icon>Tạo yêu cầu
+                              <iconify-icon icon="material-symbols:add-box"></iconify-icon>Tạo khoá học
                             </button>
+                          </div>
+                          <div class="course-search">
+                            <form action="course.php?action=search" method="post" id = "product-search-form">
+                                <fieldset>
+                                    <legend>Tìm kiếm khoá học</legend>
+                                    Tên khoá học <input type ="text" name ="name" value =""/>
+                                    Cấp độ <input type ="text" name ="level" value =""/>
+                                    <input type="submit" value="Lọc" />
+                                </fieldset>
+                            </form>
                           </div>
                             <div class="table-responsive">
                                 <table class="table text-nowrap">
@@ -79,12 +118,6 @@
                                     <tbody>
                                     <?php 
                                         $output = '';
-                                        $sqlcourse =  $con->query("SELECT * FROM course 
-                                          INNER JOIN(
-                                            SELECT * FROM schedule
-                                          ) AS temp
-                                          ON temp.course_id = course.course_id
-                                        ");
                                         $i = 0;
                                         if ($sqlcourse->num_rows > 0) {
                                           // output data of each row

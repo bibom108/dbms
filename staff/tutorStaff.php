@@ -2,6 +2,18 @@
     session_start();
     include('../config/ketnoi.php');
     if (true) {
+      //Kiểm tra action và thực hiện lọc
+      if(!empty($_GET['action']) && $_GET['action'] == 'search' && !empty($_POST)){
+        $_SESSION['course_filter'] = $_POST;
+      }
+      if(!empty($_SESSION['course_filter'])){
+        $where = '';
+        foreach($_SESSION['course_filter'] as $field =>$value){
+          if(!empty($value)){
+            $where .= (!empty($where)) ? " AND "."`".$field."` LIKE '%".$value."%'": "`".$field."` LIKE '%".$value."%'";
+          }
+        }
+      }
     }
     else {
         header('Location:../login.php');
@@ -10,6 +22,17 @@
           MỤC ĐÍCH PAGE NÀY
           SHOW TẤT CẢ CÁC GIẢNG VIÊN
     */
+    if(!empty($where)){
+      $sqltutorStaff =  $con->query("SELECT * FROM teacher, staff 
+      WHERE teacher.teacher_id = staff.staff_id
+      AND (".$where.");
+    ");
+    }
+    else {
+      $sqltutorStaff = $con->query("SELECT * FROM teacher, staff 
+      WHERE teacher.teacher_id = staff.staff_id
+    ");
+    }
 ?>
 <!doctype html>
 <html lang="en">
@@ -53,6 +76,15 @@
                     <div class="col-sm-12">
                         <div class="white-box">
                             <h3 class="box-title">Thông Tin Giảng Viên</h3>
+                            <div class="course-search">
+                              <form action="tutorStaff.php?action=search" method="post" id = "product-search-form">
+                                  <fieldset>
+                                      <legend>Lọc giảng viên</legend>
+                                      Loại <input type ="text" name ="type" value =""/>
+                                      <input type="submit" value="Lọc" />
+                                  </fieldset>
+                              </form>
+                            </div>
                             <div class="table-responsive">
                                 <table class="table text-nowrap">
                                     <thead>
@@ -68,9 +100,6 @@
                                     </thead>
                                     <tbody>
                                     <?php 
-                                      $sqltutorStaff = $con->query("SELECT * FROM teacher, staff 
-                                        WHERE teacher.teacher_id = staff.staff_id
-                                      ");
                                       if($sqltutorStaff->num_rows > 0){
                                         $i = 0;
                                         $output = '';

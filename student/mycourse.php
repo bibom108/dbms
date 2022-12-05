@@ -42,9 +42,53 @@
     }
 
     if (isset($_SESSION['idStudent'])) {
+      if(!empty($_GET['action']) && $_GET['action'] == 'search' && !empty($_POST)){
+        $_SESSION['course_filter'] = $_POST;
+      }
+      if(!empty($_SESSION['course_filter'])){
+        $where = '';
+        foreach($_SESSION['course_filter'] as $field =>$value){
+          if(!empty($value)){
+            $where .= (!empty($where)) ? " AND "."`".$field."` LIKE '%".$value."%'": "`".$field."` LIKE '%".$value."%'";
+          }
+        }
+      }
     }
     else {
         header('Location:../login.php');
+    }
+
+    //select $sqlcourse to render 
+    if(empty($where)){
+      $sqlcourse =  $student->query("SELECT * FROM course 
+        INNER JOIN(
+          SELECT course_id 
+            FROM study
+            INNER JOIN(
+                SELECT student_id
+                FROM student    
+            WHERE student_id = '{$_SESSION['idStudent']}'
+            ) AS temp1
+            on temp1.student_id = study.student_id
+        ) AS temp2
+        ON temp2.course_id = course.course_id
+      ");
+    }
+    else {
+      $sqlcourse =  $student->query("SELECT * FROM course 
+        INNER JOIN(
+          SELECT course_id 
+            FROM study
+            INNER JOIN(
+                SELECT student_id
+                FROM student    
+            WHERE student_id = '{$_SESSION['idStudent']}'
+            ) AS temp1
+            on temp1.student_id = study.student_id
+        ) AS temp2
+        ON temp2.course_id = course.course_id
+        WHERE (".$where.")
+      ");      
     }
 ?>
 <!doctype html>
@@ -90,6 +134,19 @@
                     <div class="col-sm-12">
                         <div class="white-box">
                             <h3 class="box-title">Khóa Học</h3>
+                            <div class="course-search">
+                              <form action="mycourse.php?action=search" method="post" id = "product-search-form">
+                                  <fieldset>
+                                      <legend>Lọc khoá học</legend>
+                                        <select name="status" id="status">
+                                          <option value="">All</option>
+                                          <option value="In progress">In Progress</option>
+                                          <option value="Finished">Finished</option>
+                                        </select>
+                                      <input type="submit" value="Lọc" />
+                                  </fieldset>
+                              </form>
+                            </div>
                             <div class="table-responsive">
                                 <table class="table text-nowrap">
                                     <thead>
@@ -108,20 +165,6 @@
                                     <tbody>
                                       <?php 
                                         $output = '';
-                                        $sqlcourse =  $student->query("SELECT * FROM course 
-                                        INNER JOIN(
-                                          SELECT course_id 
-                                            FROM study
-                                            INNER JOIN(
-                                                SELECT student_id
-                                                FROM student    
-                                            WHERE student_id = '{$_SESSION['idStudent']}'
-                                            ) AS temp1
-                                            on temp1.student_id = study.student_id
-                                        ) AS temp2
-                                        ON temp2.course_id = course.course_id
-                                      ");
-
                                         $i = 0;
                                         if ($sqlcourse->num_rows > 0) {
                                           // output data of each row
