@@ -1,0 +1,69 @@
+.landing-1 > .content {
+  background-color: white;
+  justify-content: space-between;
+  margin: 50px auto !important;
+  padding: 30px 0 !important;
+}
+.landing-1 .other-login {
+  display: flex;
+}
+.landing-1 .other-login p {
+  margin-right: 30px;
+}
+.landing-1 .other-login i {
+  margin-right: 13px;
+}
+.or {
+  border: 1px solid black;
+  position: relative;
+  margin: 20px 0;
+}
+.or::after {
+  content: "Hoặc";
+  position: absolute;
+  top: -12px;
+  left: 40%;
+  transform: translateX(50%);
+  z-index: 10;
+  background-color: white;
+  padding: 0 10px;
+}
+.landing-1 .default-login form > div {
+  margin-top: 19px;
+}
+.landing-1 .default-login .mb-3 div {
+  position: relative;
+}
+.landing-1 .default-login i {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 10px;
+}
+.landing-1 .default-login .row {
+  justify-content: space-between;
+}
+.landing-1 .default-login .row .forget-pwd {
+  display: flex;
+  justify-content: end;
+}
+.button {
+  border-radius: 10px;
+  font-size: var(--default-text);
+  margin-top: 10px;
+}
+.landing-1 .register a {
+  color: red;
+  font-weight: bold;
+}
+.has-error {
+  font-size: 16px !important;
+  color: red !important;
+  margin-top: 5px !important;
+  font-style: italic;
+}
+.footer {
+  background-color: white !important;
+  padding: 80px 0;
+  color: var(--primary-color) !important;
+}

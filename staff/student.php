@@ -70,11 +70,11 @@
                             <div class="course-search">
                               <form action="mycourse.php?action=search" method="post" id = "product-search-form">
                                   <fieldset>
-                                      <legend>Lọc khoá học</legend>
+                                      <legend>Lọc học viên</legend>
                                         <select name="status" id="status">
-                                          <option value="">All</option>
-                                          <option value="In progress">In Progress</option>
-                                          <option value="Finished">Finished</option>
+                                          <option value="">Tất cả</option>
+                                          <option value="under18">Dưới 18 tuổi</option>
+                                          <option value="full18">Trên 18 tuổi</option>
                                         </select>
                                       <input type="submit" value="Lọc" />
                                   </fieldset>

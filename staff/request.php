@@ -4,6 +4,27 @@
     //giả sử login với 1 id là giáo viên 
     $staffid = '5511211';
     if (true) {
+      //nhận form bộ lọc và thiết lập where
+      if(!empty($_GET['action']) && $_GET['action'] == 'search' && !empty($_POST)){
+        $_SESSION['course_filter'] = $_POST;
+      }
+      if(!empty($_SESSION['course_filter'])){
+        $where = '';
+        foreach($_SESSION['course_filter'] as $field =>$value){
+          switch($field) {
+            case 'status':
+              if(!empty($value)){
+                $where .= (!empty($where)) ? " AND "."`".$field."` LIKE ".$value."": "`".$field."` LIKE ".$value."";
+              }
+              break;
+            default:
+              if(!empty($value)){
+                $where .= (!empty($where)) ? " AND "."`".$field."` LIKE '%".$value."%'": "`".$field."` LIKE '%".$value."%'";
+              }
+              break;
+          }
+        }
+      }
     }
     else {
         header('Location:../login.php');
@@ -13,6 +34,21 @@
             MỤC ĐÍCH PAGE NÀY
             SHOW KẾT QUẢ ĐÁNH GIÁ CỦA GIÁO VIÊN ĐANG ĐĂNG NHẬP
     */
+        //select $sqlcourse to render 
+        var_dump($where);
+    if(empty($where)){
+      $sqlrequest = $con->query("SELECT request.time, request.content, request.status , student.name as student_name, course.name as course_name
+      FROM (request INNER JOIN course ON request.course_id = course.course_id)
+      INNER JOIN student ON student.student_id = request.student_id
+      ");
+    }
+    else {
+      $sqlrequest = $con->query("SELECT request.time, request.content, request.status , student.name as student_name, course.name as course_name
+      FROM (request INNER JOIN course ON request.course_id = course.course_id)
+      INNER JOIN student ON student.student_id = request.student_id
+      WHERE (".$where.")
+      ");   
+    }
 ?>
 <!doctype html>
 <html lang="en">
@@ -62,6 +98,19 @@
                               <iconify-icon icon="material-symbols:add-box"></iconify-icon>Tạo yêu cầu
                             </button>
                           </div>
+                          <div class="course-search">
+                              <form action="request.php?action=search" method="post" id = "product-search-form">
+                                  <fieldset>
+                                      <legend>Lọc yêu cầu</legend>
+                                        <select name="status" id="status">
+                                          <option value="">All</option>
+                                          <option value="1">Đã được duyệt</option>
+                                          <option value="0">Chưa được duyệt</option>
+                                        </select>
+                                      <input type="submit" value="Lọc" />
+                                  </fieldset>
+                              </form>
+                            </div>
                             <div class="table-responsive">
                                 <table class="table text-nowrap">
                                     <thead>
@@ -79,12 +128,7 @@
                                       <?php 
                                       $output = '';
                                       $i = 0;
-                                      // lựa chọn các kết quả của người đăng nhập mà giáo viên đã đánh giá
-                                      $sqlrequest = $con->query("SELECT request.time, request.content, request.status , student.name as student_name, course.name as course_name
-                                      FROM (request INNER JOIN course ON request.course_id = course.course_id)
-                                      INNER JOIN student ON student.student_id = request.student_id
-                                      ");
-                                      
+                                             
                                       if ($sqlrequest->num_rows > 0) {
                                         $i = 0;
                                         $output = '';
