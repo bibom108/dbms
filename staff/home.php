@@ -21,11 +21,11 @@
         }
 
         if(empty($error)){
-            $query = 'SELECT * FROM user_management WHERE user = '.$username.' AND password = '.$pwd.';';
+            $query = "SELECT * FROM staff WHERE staff_id = '{$username}'";
             $res = $con->query($query);
             if ($res->num_rows > 0) {
                 $_SESSION['id'] = $username;
-                $_SESSION['type'] = $res->fetch_assoc()['type'];
+                $_SESSION['type'] = $res->fetch_assoc()['role'];
                 header('Location:./profile.php');
             }
             else {

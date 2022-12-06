@@ -3,7 +3,7 @@
     include('../config/ketnoi.php');
     //giả sử login với 1 id là giáo viên 
     if (true) {
-        $sqlstaff = $con->query("SELECT * FROM staff WHERE staff.staff_id = '5511211' ");
+        $sqlstaff = $con->query("SELECT * FROM staff WHERE staff.staff_id = '{$_SESSION['id']}' ");
         $rowstaff = $sqlstaff->fetch_assoc();
     }
     else {
@@ -13,6 +13,13 @@
           MỤC ĐÍCH PAGE NÀY
           SHOW TẤT CẢ CÁC THÔNG TIN CỦA NGƯỜI ĐANG ĐĂNG NHẬP
     */
+    if (isset($_POST['submitchange'])){
+      $name = $_POST['inputFname'];
+      $address = $_POST['inputAddress'];
+
+      $query = "UPDATE staff SET name = '{$name}', address = '{$address}' WHERE staff_id = '{$_SESSION['id']}'";
+      $con->query($query);
+    }
 ?>
 <!doctype html>
 <html lang="en">
@@ -46,31 +53,27 @@
           <?php require "./partial/nav-bar.php"?>
         </div>
         <div class="col-9">
-          <div class="link row">
-              <div class="text">Thông tin cá nhân</div>
-              .<button type="button" class="btn btn-primary">Đăng ký thêm khoá học</button>
-          </div>
           <div class="wrapper-content row"> 
             <div class="col-9">
-              <form>
+              <form action="" method="post">
                 <div class="form-row">
                   <div class="form-group col-md-6">
                     <label for="inputFname">Fullname: </label>
-                    <input type="text" class="form-control" id="inputFname" readonly value="<?php echo $rowstaff['name'] ?>">
+                    <input type="text" class="form-control" id="inputFname" name="inputFname"  value="<?php echo $rowstaff['name'] ?>">
                   </div>
                   <div class="form-group col-md-6">
                     <label for="inputDoB">Date of Birth</label>
-                    <input type="date" class="form-control" id="inputDoB" value="<?php echo $rowstaff['dob'] ?>">
+                    <input type="date" class="form-control" id="inputDoB" readonly value="<?php echo $rowstaff['dob'] ?>">
                   </div>
                 </div>
                 <div class="form-group">
                   <label for="inputEmail">Email</label>
-                  <input type="text" class="form-control" id="inputEmail" value="<?php echo $rowstaff['email'] ?>">
+                  <input type="text" class="form-control" id="inputEmail" readonly value="<?php echo $rowstaff['email'] ?>">
                 </div>
                 <div class="form-row">
                   <div class="form-group col-md-12">
                     <label for="inputPhone">Phone number: </label>
-                    <input type="number" class="form-control" id="inputPhone" value="<?php echo $rowstaff['phone'] ?>">
+                    <input type="number" class="form-control" id="inputPhone" readonly value="<?php echo $rowstaff['phone'] ?>">
                   </div>
                 </div>
                 <div class="form-group">
@@ -79,9 +82,9 @@
                 </div>
                 <div class="form-group">
                   <label for="inputAddress">Address</label>
-                  <input type="text" class="form-control" id="inputAddress"  value="<?php echo $rowstaff['address'] ?>" >
+                  <input type="text" class="form-control" id="inputAddress" name="inputAddress" value="<?php echo $rowstaff['address'] ?>" >
                 </div>
-                <button type="submit" class="btn btn-primary">CẬP NHẬT THÔNG TIN</button>
+                <button type="submit" name="submitchange" class="btn btn-primary">CẬP NHẬT THÔNG TIN</button>
               </form>
             </div>
             <div class="col-3 avatar-column">

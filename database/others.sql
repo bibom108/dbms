@@ -38,6 +38,32 @@ BEGIN
 END $$
 DELIMITER ;
 
+-- Tính tuổi học viên
+DELIMITER $$
+CREATE FUNCTION CalcStudentAge(studentID CHAR(20))
+RETURNS INT
+DETERMINISTIC
+READS SQL DATA
+BEGIN
+    DECLARE res INT;
+    SET res=(CURDATE() - (SELECT dob FROM student WHERE student_id = studentID))/10000;
+    RETURN res;
+END $$
+DELIMITER ;
+
+-- Tính tuổi nhân viên
+DELIMITER $$
+CREATE FUNCTION CalcStaffAge(staffID CHAR(20))
+RETURNS INT
+DETERMINISTIC
+READS SQL DATA
+BEGIN
+    DECLARE res INT;
+    SET res=(CURDATE() - (SELECT dob FROM staff WHERE staff_id = staffID))/10000;
+    RETURN res;
+END $$
+DELIMITER ;
+
 -- Kiểm tra sinh viên có học một khóa học nào đó không
 DELIMITER $$
 CREATE FUNCTION CheckStudy(studentID CHAR(7), courseID CHAR(7))
@@ -188,7 +214,19 @@ DELIMITER ;
 
 
 -- TRIGGERS
---  
+-- Tự động sửa sức chứa của phòng học cho hợp lệ
+DELIMITER $$
+CREATE TRIGGER UpdateRoomCap
+BEFORE INSERT ON classroom
+FOR EACH ROW
+BEGIN
+    IF NEW.capacity < 0 THEN
+        SET NEW.capacity = 0;
+    ELSEIF NEW.capacity > 100 THEN
+        SET NEW.capacity = 100;
+    END IF;
+END $$
+DELIMITER ;
 
 
 
@@ -196,3 +234,19 @@ DELIMITER ;
 -- Các phòng chứa tối đa là số dương bé hơn 100
 CREATE ASSERTION CheckRoomCap
 AS CHECK (NO EXTISTS (SELECT * FROM classroom WHERE capacity > 100 OR capacity < 0));
+
+-- Request trong bảng accept phải thuộc dạng đăng kí hoặc hủy khóa học
+CREATE ASSERTION CheckAcceptType
+AS CHECK (NO EXTISTS (SELECT * FROM accept WHERE type NOT IN ('IN', 'OUT')));
+
+-- Trạng thái khóa học phải hoàn tất hoặc trong tiến trình
+CREATE ASSERTION CheckCourseStatus
+AS CHECK (NO EXTISTS (SELECT * FROM course WHERE status NOT IN ('In progress', 'Done')));
+
+-- Trạng thái của yêu cầu khác phải thuộc được chấp nhận hoặc không
+CREATE ASSERTION CheckRequestStatus
+AS CHECK (NO EXTISTS (SELECT * FROM request WHERE status NOT IN (0, 1)));
+
+-- Các loại user phải thuộc những loại đã định trước
+CREATE ASSERTION CheckUserType
+AS CHECK (NO EXTISTS (SELECT * FROM user_management WHERE type NOT IN ('db-manager', 'db-teacher', 'db-customerservice')));

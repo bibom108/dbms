@@ -1,6 +1,11 @@
 <?php
     session_start();
     include('../config/ketnoi.php');
+    if (isset($_SESSION['id']) and ($_SESSION['type'] == 'Quản lý khóa học' or $_SESSION['type'] == 'Chăm sóc khách hàng')) {
+    }
+    else {
+      header('Location:./profile.php');
+    }
     // định lọc sinh viên dưới 18 và trên 18 tuổi mà hong biết đường làm :'(
     if (true) {
         $sqlstudent =  $con->query("SELECT * FROM student ");
@@ -58,26 +63,31 @@
           <?php require "./partial/nav-bar.php"?>
         </div>
         <div class="col-9">
-          <div class="link row">
-              <div class="text">Quản Lý Học Viên</div>  
-          </div>
           <div class="wrapper-content row">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="white-box">
-                            <h3 class="box-title">Thông Tin Học Viên</h3>
+                            <div class="title row">
+                              <h3 class="box-title">Thông Tin Học Viên</h3>
+                              <!-- Button trigger modal -->                          
+                              
+                            </div>
                             <div class="course-search">
-                              <form action="mycourse.php?action=search" method="post" id = "product-search-form">
-                                  <fieldset>
-                                      <legend>Lọc học viên</legend>
-                                        <select name="status" id="status">
-                                          <option value="">Tất cả</option>
-                                          <option value="under18">Dưới 18 tuổi</option>
-                                          <option value="full18">Trên 18 tuổi</option>
-                                        </select>
+                              <form action="" method="post">
+                                  <!-- <fieldset>
+                                      Khu vực <input type ="text" name ="type" value =""/>
                                       <input type="submit" value="Lọc" />
-                                  </fieldset>
+                                  </fieldset> -->
+                                  <div class="form-group">
+                                    <label for="studentage">Loại học viên</label>
+                                    <select name="studentage" id="studentage">
+                                      <option value="all">Tất cả học viên</option>
+                                      <option value="d18">Dưới 18 tuổi</option>
+                                      <option value="t18">Trên 18 tuổi</option>
+                                    </select>
+                                    <button type="submit" name="filter" class="btn btn-primary">Lọc</button>
+                                  </div>
                               </form>
                             </div>
                             <div class="table-responsive contain-admin__table" >
@@ -90,28 +100,141 @@
                                             <th>Địa Chỉ</th>
                                             <th>Ngày Sinh</th>
                                             <th>Tuổi</th>
+                                            <th>Mối quan hệ</th>
+                                            <th>Khóa học hiện tại</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                       <?php 
-                                        $sqlstudent =  $con->query("SELECT * FROM student ");
-                                        if($sqlstudent->num_rows > 0) {
-                                          $output = '';
-                                          $i = 0;
-                                          while($rowstudent = $sqlstudent->fetch_assoc()) {
-                                            $i++;
-                                            $output .= '<tr> 
-                                              <td>'.$i.'</td>
-                                              <td>'.$rowstudent['student_id'].'</td>
-                                              <td>'.$rowstudent['name'].'</td> 
-                                              <td>'.$rowstudent['address'].'</td>
-                                              <td>'.$rowstudent['dob'].'</td>
-                                              <td style = "font-size: 18px">
-                                                <button type="button" data-toggle="modal" data-target="#editModal" class="btn btn-success"><iconify-icon icon="material-symbols:edit"></iconify-icon></button>
-                                                <button type="button" data-toggle="modal" data-target="#deleteModal" class="btn btn-danger deletecourse" style="color: #fff"><iconify-icon icon="mdi:trash"></iconify-icon></button>
-                                              </td>
-                                              </tr>
-                                              ';
+                                        $output = '';
+                                        if (isset($_POST['filter'])) {
+                                          if($_POST['studentage'] == 'd18'){
+                                            $sqlstudentd18 =  $con->query("SELECT * FROM student, supervisor WHERE student.student_id = supervisor.student_id");
+                                            if($sqlstudentd18->num_rows > 0) {
+                                              $i = 0;
+                                              while($rowstudent = $sqlstudentd18->fetch_assoc()) {
+                                                $manage_courses = $con->query("SELECT * FROM course, study 
+                                                  WHERE study.student_id = '{$rowstudent['student_id']}' AND course.course_id = study.course_id
+                                                ");
+                                                $courses = '';
+                                                while ($manage_course = $manage_courses->fetch_assoc()) {
+                                                  $courses .= $manage_course['name'];
+                                                  $courses .= '<br>';
+                                                }
+                                                $i++;
+                                                $output .= '<tr> 
+                                                  <td>'.$i.'</td>
+                                                  <td>'.$rowstudent['student_id'].'</td>
+                                                  <td>'.$rowstudent['name'].'</td> 
+                                                  <td>'.$rowstudent['address'].'</td>
+                                                  <td>'.$rowstudent['dob'].'</td>
+                                                  <td>'.$rowstudent['age'].'</td>
+                                                  <td>'.$rowstudent['relationship'].'</td>
+                                                  <td>'.$courses.'</td>
+                                                  
+                                                  </tr>
+                                                  ';
+                                              }
+                                            }
+                                          }
+                                          else if($_POST['studentage'] == 't18'){
+                                            $sqlstudentt18 =  $con->query("SELECT * FROM student, studentt18  WHERE student.student_id = studentt18.student_id");
+                                            if($sqlstudentt18->num_rows > 0) {
+                                              $i = 0;
+                                              while($rowstudent = $sqlstudentt18->fetch_assoc()) {
+                                                $manage_courses = $con->query("SELECT * FROM course, study 
+                                                  WHERE study.student_id = '{$rowstudent['student_id']}' AND course.course_id = study.course_id
+                                                ");
+                                                $courses = '';
+                                                while ($manage_course = $manage_courses->fetch_assoc()) {
+                                                  $courses .= $manage_course['name'];
+                                                  $courses .= '<br>';
+                                                }
+                                                $i++;
+                                                $output .= '<tr> 
+                                                  <td>'.$i.'</td>
+                                                  <td>'.$rowstudent['student_id'].'</td>
+                                                  <td>'.$rowstudent['name'].'</td> 
+                                                  <td>'.$rowstudent['address'].'</td>
+                                                  <td>'.$rowstudent['dob'].'</td>
+                                                  <td>'.$rowstudent['age'].'</td>
+                                                  <td> None </td>
+                                                  <td>'.$courses.'</td>
+                                                  
+                                                  </tr>
+                                                  ';
+                                              }
+                                            }
+                                          }
+                                          else {
+                                            $sqlstudent =  $con->query("SELECT * FROM student");
+                                            if($sqlstudent->num_rows > 0) {
+                                              $i = 0;
+                                              while($rowstudent = $sqlstudent->fetch_assoc()) {
+                                                $manage_courses = $con->query("SELECT * FROM course, study 
+                                                  WHERE study.student_id = '{$rowstudent['student_id']}' AND course.course_id = study.course_id
+                                                ");
+                                                $courses = '';
+                                                while ($manage_course = $manage_courses->fetch_assoc()) {
+                                                  $courses .= $manage_course['name'];
+                                                  $courses .= '<br>';
+                                                }
+                                                $relationship = 'None';
+                                                $relationships = $con->query("SELECT * FROM supervisor 
+                                                  WHERE student_id = '{$rowstudent['student_id']}'
+                                                ");
+                                                if ($relationships->num_rows > 0) {
+                                                  $relationship = $relationships->fetch_assoc()['relationship'];
+                                                }
+                                                $i++;
+                                                $output .= '<tr> 
+                                                  <td>'.$i.'</td>
+                                                  <td>'.$rowstudent['student_id'].'</td>
+                                                  <td>'.$rowstudent['name'].'</td> 
+                                                  <td>'.$rowstudent['address'].'</td>
+                                                  <td>'.$rowstudent['dob'].'</td>
+                                                  <td>'.$rowstudent['age'].'</td>
+                                                  <td>'. $relationship .'</td>
+                                                  <td>'.$courses.'</td>
+                                                  </tr>
+                                                  ';
+                                              }
+                                            }
+                                          }
+                                        }
+                                        else {
+                                          $sqlstudent =  $con->query("SELECT * FROM student");
+                                            if($sqlstudent->num_rows > 0) {
+                                              $i = 0;
+                                              while($rowstudent = $sqlstudent->fetch_assoc()) {
+                                                $manage_courses = $con->query("SELECT * FROM course, study 
+                                                  WHERE study.student_id = '{$rowstudent['student_id']}' AND course.course_id = study.course_id
+                                                ");
+                                                $courses = '';
+                                                while ($manage_course = $manage_courses->fetch_assoc()) {
+                                                  $courses .= $manage_course['name'];
+                                                  $courses .= '<br>';
+                                                }
+                                                $relationship = 'None';
+                                                $relationships = $con->query("SELECT * FROM supervisor 
+                                                  WHERE student_id = '{$rowstudent['student_id']}'
+                                                ");
+                                                if ($relationships->num_rows > 0) {
+                                                  $relationship = $relationships->fetch_assoc()['relationship'];
+                                                }
+                                                $i++;
+                                                $output .= '<tr> 
+                                                  <td>'.$i.'</td>
+                                                  <td>'.$rowstudent['student_id'].'</td>
+                                                  <td>'.$rowstudent['name'].'</td> 
+                                                  <td>'.$rowstudent['address'].'</td>
+                                                  <td>'.$rowstudent['dob'].'</td>
+                                                  <td>'.$rowstudent['age'].'</td>
+                                                  <td>'. $relationship .'</td>
+                                                  <td>'.$courses.'</td>
+                                                  </tr>
+                                                  ';
+                                              }
                                           }
                                         }
                                         echo $output;

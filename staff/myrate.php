@@ -2,15 +2,23 @@
     session_start();
     include('../config/ketnoi.php');
 
-    if (true) {
+    if (isset($_SESSION['id']) and $_SESSION['type'] == 'Chăm sóc khách hàng') {
     }
     else {
-        header('Location:../login.php');
+      header('Location:./profile.php');
     }
     /*
       MỤC ĐÍCH PAGE NÀY
       SHOW TẤT CẢ CÁC ĐÁNH GIÁ CỦA HỌC VIÊN VỀ CÁC KHOÁ HỌC
     */
+
+    if(isset($_POST['submitdelete'])){
+      $student_id = $_POST['inputIDstudent'];
+      $course_id = $_POST['inputIDcourse'];
+      // Xóa quản lý chi nhánh trong staff
+      $query = "DELETE FROM review WHERE student_id='{$student_id}' AND course_id='{$course_id}'";
+      $con->query($query);
+    }
 ?>
 <!doctype html>
 <html lang="en">
@@ -45,10 +53,6 @@
           <?php require "./partial/nav-bar.php"?>
         </div>
         <div class="col-9">
-          <div class="link row">
-              <div class="text">Đánh giá của tôi</div>
-              <button type="button" class="btn btn-primary">Thêm đánh giá</button>
-          </div>
           <div class="wrapper-content row">
             <div class="container-fluid">
                 <div class="row">
@@ -65,7 +69,7 @@
                                             <th>ID Khoá học</th>
                                             <th>Tên khoá học</th>
                                             <th>Học viên</th>
-                                            <th>Thời Gian Yêu Cầu</th>
+                                            <th>Thời Gian đánh giá</th>
                                             <th>Nội Dung</th>
                                             <th>Tác vụ</th>
                                         </tr>
@@ -74,7 +78,7 @@
                                       <?php 
                                         $i = 0;
                                         $output = '';
-                                        $sqlrate = $con->query("SELECT review.content, course.name AS course_name, course.course_id, student.name AS student_name
+                                        $sqlrate = $con->query("SELECT review.time, review.content, course.name AS course_name, course.course_id, student.name AS student_name, student.student_id
                                         FROM (review INNER JOIN course ON review.course_id = course.course_id)
                                         INNER JOIN student ON review.student_id = student.student_id
                                         ");
@@ -87,21 +91,14 @@
                                             <td>'.$rowrate['course_id'].'</td>
                                             <td>'.$rowrate['course_name'].'</td>
                                             <td>'.$rowrate['student_name'].'</td>
-                                            <td>Chưa có</td>
+                                            <td>'.$rowrate['time'].'</td>
                                             <td>'.$rowrate['content'].'</td>
                                             ';
-                                              if(true){
-                                                $output.= '<td>
-                                                            <button type="button" class="btn btn-danger deletecourse" style="color: #fff"><iconify-icon icon="mdi:trash"></iconify-icon></button>
-                                                          </td>
-                                                        </tr>';
-                                            }
-                                            else{
-                                                $output.= '<td>
-                                                            
-                                                            </td>
-                                                        </tr>';
-                                            }
+                                              
+                                            $output.= '<td>
+                                                        <button onclick="document.getElementById(\'inputIDstudent\').value = '.$rowrate['student_id'].'; document.getElementById(\'inputIDcourse\').value = '.$rowrate['course_id'].'" type="button" data-toggle="modal" data-target="#deleteRequestModal" class="btn btn-danger"><iconify-icon icon="mdi:trash"></iconify-icon></button>
+                                                      </td>
+                                                    </tr>';
                                           }
                                           echo $output;
                                         }
@@ -117,7 +114,31 @@
           </div>
         </div>
       </div>
-
+      <div class="modal fade" id="deleteRequestModal" tabindex="-1" role="dialog" aria-labelledby="deleteRequestModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Xoá Quản Lý</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              Bạn có chắc sẽ xoá đánh giá này chứ ?
+              <form action="" method="post">
+                <div class="form-group">
+                  <input id="inputIDstudent" type="hidden" name="inputIDstudent" value="">
+                  <input id="inputIDcourse" type="hidden" name="inputIDcourse" value="">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                  <button type="submit" name = "submitdelete" class="btn btn-danger">Yes</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>                                      
     </div>
     <?php require "../partial/footer.php"?>
     <!-- Optional JavaScript -->

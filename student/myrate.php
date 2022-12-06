@@ -63,7 +63,7 @@
     <link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet">
   </head>
   <body>
-    <?php require "../partial/header-logined.php"?>
+    <?php require "./partial/header-logined.php"?>
     <div class="content container-fluid !direction !spacing">
       <div class="row">
         <div class="col-3 navigation-bar">

@@ -2,7 +2,24 @@
     session_start();
     include('./config/admin.php');
     global $con;
+
+    if(isset($_POST['submitsign'])){
+      $id = $_POST['inputIDsign'];
+
+      // Kiểm tra sv đã có yêu cầu chưa chấp thuận hay ko
+      $query = "SELECT * FROM accept WHERE student_id = '{$_SESSION['idStudent']}' AND course_id = '{$id}' AND type = 'IN'";
+      $res = $con->query($query);
+      if ($res->num_rows > 0) {
+        // Đã có
+      }
+      else {
+        // Thêm vào yêu cầu mới
+        $query = "INSERT INTO accept(student_id, course_id, type) VALUES('{$_SESSION['idStudent']}', '{$id}', 'IN')";
+        $con->query($query);
+      }
+    }
 ?>
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -86,7 +103,7 @@
                                     }
                                 }
                             }
-                            if($check == 0)$output.='<button type="button" data-toggle="modal" data-target="#createModal" style="color: #fff" class="btn btn-warning text-white mt-2 insertcourse"> Đăng Ký Khóa Học </button>
+                            if($check == 0)$output.='<button onclick="document.getElementById(\'inputIDsign\').value = '.$rowcourse['course_id'].'" type="button" data-toggle="modal" data-target="#createModal" style="color: #fff" class="btn btn-warning text-white mt-2 insertcourse"> Đăng Ký Khóa Học </button>
                                         </form>
                                     </div>
                                 </div>
@@ -99,43 +116,31 @@
             </div>
         </div>
     </div>
-          <!-- Create Request Modal -->
-    <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalTitle" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="createModalTitle">Đăng ký khoá học</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <form action="" method="post">
-                <div class="form-group">
-                  <label for="inputName">Tên ngân hàng</label>
-                  <input type="text" class="form-control" id="inputName" placeholder="Hồ Hoàng Huy">
-                </div>
-                <div class="form-group">
-                  <label for="inputID">Số thẻ</label>
-                  <input type="number" class="form-control" id="inputEmail" placeholder="">
-                </div>
-                <div class="form-group">
-                  <label for="inputDate">Ngày phát hành</label>
-                  <input type="date" class="form-control" id="inputDate" placeholder="">
-                </div>
-                <div class="form-group">
-                  <label for="inputNameof">Tên chủ thẻ</label>
-                  <input type="text" class="form-control" id="inputNameof" placeholder="Hồ Hoàng Huy">
-                </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">HUỶ THANH TOÁN</button>
-              <button type="button" class="btn btn-primary">THANH TOÁN</button>
-            </div>
+    <!-- Create Request Modal -->
+    <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Đăng kí khóa học</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Bạn có chắc đăng kí khóa học này?
+            <form action="" method="post">
+              <div class="form-group">
+                <input id="inputIDsign" type="hidden" name="inputIDsign" value="">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="submit" name = "submitsign" class="btn btn-success">Yes</button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
+    </div>
     <?php require "./partial/footer.php" 
         ?>
     <!-- Optional JavaScript -->

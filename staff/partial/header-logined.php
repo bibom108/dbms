@@ -13,12 +13,11 @@
                 </nav>
           </div>
           <div class="col-3 row button-bar">
-              <div class="mycourse" onclick="window.location.assign('./student/mycourse.php');">Khoá học của tôi</div>
               <div class="notice"><i class="fa fa-bell" aria-hidden="true"></i></div>
               <div class="user">
                     <ul>
-                        <li onclick="window.location.assign('./student/profile.php');">Trang cá nhân</li>
-                        <li onclick="window.location.assign('./student/logout.php');">Đăng xuất</li>
+                        <li onclick="window.location.assign('./profile.php');">Trang cá nhân</li>
+                        <li onclick="window.location.assign('./logout.php');">Đăng xuất</li>
                     </ul>
               </div>   
           </div>

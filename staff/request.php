@@ -1,42 +1,52 @@
 <?php
     session_start();
     include('../config/ketnoi.php');
-    //giả sử login với 1 id là giáo viên 
-    $staffid = '5511211';
-    if (true) {
-      //nhận form bộ lọc và thiết lập where
-      if(!empty($_GET['action']) && $_GET['action'] == 'search' && !empty($_POST)){
-        $_SESSION['course_filter'] = $_POST;
-      }
-      if(!empty($_SESSION['course_filter'])){
-        $where = '';
-        foreach($_SESSION['course_filter'] as $field =>$value){
-          switch($field) {
-            case 'status':
-              if(!empty($value)){
-                $where .= (!empty($where)) ? " AND "."`".$field."` LIKE ".$value."": "`".$field."` LIKE ".$value."";
-              }
-              break;
-            default:
-              if(!empty($value)){
-                $where .= (!empty($where)) ? " AND "."`".$field."` LIKE '%".$value."%'": "`".$field."` LIKE '%".$value."%'";
-              }
-              break;
-          }
-        }
-      }
+    if (isset($_SESSION['id']) and $_SESSION['type'] == 'Chăm sóc khách hàng') {
     }
     else {
-        header('Location:../login.php');
+      header('Location:./profile.php');
     }
+    //giả sử login với 1 id là giáo viên 
+    // if (true) {
+    //   //nhận form bộ lọc và thiết lập where
+    //   if(!empty($_GET['action']) && $_GET['action'] == 'search' && !empty($_POST)){
+    //     $_SESSION['course_filter'] = $_POST;
+    //   }
+    //   if(!empty($_SESSION['course_filter'])){
+    //     $where = '';
+    //     foreach($_SESSION['course_filter'] as $field =>$value){
+    //       switch($field) {
+    //         case 'status':
+    //           if(!empty($value)){
+    //             $where .= (!empty($where)) ? " AND "."`".$field."` LIKE ".$value."": "`".$field."` LIKE ".$value."";
+    //           }
+    //           break;
+    //         default:
+    //           if(!empty($value)){
+    //             $where .= (!empty($where)) ? " AND "."`".$field."` LIKE '%".$value."%'": "`".$field."` LIKE '%".$value."%'";
+    //           }
+    //           break;
+    //       }
+    //     }
+    //   }
+    // }
+    // else {
+    //     header('Location:../login.php');
+    // }
 
     /*
             MỤC ĐÍCH PAGE NÀY
             SHOW KẾT QUẢ ĐÁNH GIÁ CỦA GIÁO VIÊN ĐANG ĐĂNG NHẬP
     */
         //select $sqlcourse to render 
-        var_dump($where);
-    if(empty($where)){
+
+    if(empty($_POST['status']) and !isset($_POST['filter'])){
+      $sqlrequest = $con->query("SELECT request.time, request.content, request.status , student.name as student_name, course.name as course_name
+      FROM (request INNER JOIN course ON request.course_id = course.course_id)
+      INNER JOIN student ON student.student_id = request.student_id
+      ");
+    }
+    else if ($_POST['status'] == 'a'){
       $sqlrequest = $con->query("SELECT request.time, request.content, request.status , student.name as student_name, course.name as course_name
       FROM (request INNER JOIN course ON request.course_id = course.course_id)
       INNER JOIN student ON student.student_id = request.student_id
@@ -46,7 +56,7 @@
       $sqlrequest = $con->query("SELECT request.time, request.content, request.status , student.name as student_name, course.name as course_name
       FROM (request INNER JOIN course ON request.course_id = course.course_id)
       INNER JOIN student ON student.student_id = request.student_id
-      WHERE (".$where.")
+      WHERE request.status = '{$_POST['status']}'
       ");   
     }
 ?>
@@ -83,9 +93,6 @@
           <?php require "./partial/nav-bar.php"?>
         </div>
         <div class="col-9">
-          <div class="link row">
-              <div class="text">Yêu cầu của tôi</div>
-          </div>
           <div class="wrapper-content row">
             <div class="container-fluid">
                 <div class="row">
@@ -94,21 +101,17 @@
                           <div class="title row">
                             <h3 class="box-title">Yêu Cầu</h3>
                             <!-- Button trigger modal -->                          
-                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createRequestModal">
-                              <iconify-icon icon="material-symbols:add-box"></iconify-icon>Tạo yêu cầu
-                            </button>
                           </div>
                           <div class="course-search">
-                              <form action="request.php?action=search" method="post" id = "product-search-form">
-                                  <fieldset>
-                                      <legend>Lọc yêu cầu</legend>
+                              <form action="" method="post" id = "product-search-form">
+                                  
                                         <select name="status" id="status">
-                                          <option value="">All</option>
+                                          <option value="a">All</option>
                                           <option value="1">Đã được duyệt</option>
                                           <option value="0">Chưa được duyệt</option>
                                         </select>
-                                      <input type="submit" value="Lọc" />
-                                  </fieldset>
+                                        <button type="submit" name="filter" class="btn btn-primary">Lọc</button>
+                                  
                               </form>
                             </div>
                             <div class="table-responsive">
@@ -141,7 +144,7 @@
                                           <td>'.$rowrequest['time'].'</td>
                                           <td>'.$rowrequest['content'].'</td>';
                                             
-                                            if($rowrequest['status'] == 1){
+                                          if($rowrequest['status'] == 0){
                                               $output.= '
                                                       <td>Chưa duyệt</td>
                                                       <td style = "font-size: 18px">

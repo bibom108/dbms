@@ -1,15 +1,60 @@
 <?php
     session_start();
     include('../config/ketnoi.php');
-    if (true) {
+    if (isset($_SESSION['id']) and $_SESSION['type'] == 'Quản lý chi nhánh') {
     }
     else {
-        header('Location:../login.php');
+      header('Location:./profile.php');
     }
     /*
       MỤC ĐÍCH PAGE NÀY
       SHOW TẤT CẢ CÁC NHÂN VIÊN CHĂM SÓC KHÁCH HÀNG
     */
+    if(isset($_POST['createCSKH'])){
+      $name = $_POST['inputName'];
+      $gender = $_POST['gender'];
+      $dob = $_POST['inputDate'];
+      $phone = $_POST['inputPhone'];
+      $email = $_POST['inputEmail'];
+      $address = $_POST['inputAddress'];
+      // Kiểm tra tuổi của nhân viên
+      $bday = new DateTime($dob); // Your date of birth
+      $today = new Datetime(date('y-m-d'));
+      $diff = $today->diff($bday);
+      if ($diff->y >= 16) {
+        // Random ra id
+        while (true){
+          $id = rand(4000000, 4999999);
+          $query = "SELECT * FROM customer_serice WHERE customer_serice_id = '{$id}'";
+          $res = $con->query($query);
+          if($res->num_rows == 0){
+            break;
+          }
+        }
+        // Thêm nhân viên CSKH mới
+        $query = "INSERT INTO staff(staff_id, name, gender, dob, phone, email, address, role) VALUES('{$id}', '{$name}', '{$gender}', '{$dob}', '{$phone}', '{$email}', '{$address}', 'Chăm sóc khách hàng')";
+        $con->query($query);
+        $query = "INSERT INTO customer_serice(customer_serice_id) VALUES('{$id}')";
+        $con->query($query);
+      }
+    }
+
+    if(isset($_POST['submitdelete'])){
+      $id = $_POST['inputIDxoa'];
+      // Xóa nhân viên trong staff
+      $query = "DELETE FROM staff WHERE staff_id='{$id}'";
+      $con->query($query);
+    }
+
+    if(isset($_POST['submittoggle'])){
+      $id = $_POST['inputIDtoggle'];
+      $query = "SELECT * FROM customer_serice WHERE customer_serice_id='{$id}'";
+      $res = $con->query($query);
+      $res = ($res->fetch_assoc()['still_working'] + 1) % 2;
+
+      $query = "UPDATE customer_serice SET still_working = '{$res}' WHERE customer_serice_id='{$id}'";
+      $con->query($query);
+    }
 ?>
 <!doctype html>
 <html lang="en">
@@ -44,15 +89,18 @@
           <?php require "./partial/nav-bar.php"?>
         </div>
         <div class="col-9">
-          <div class="link row">
-              <div class="text">Chăm Sóc Khách Hàng</div>  
-          </div>
           <div class="wrapper-content row">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="white-box">
-                            <h3 class="box-title">Thông Tin Nhân Viên CSKH</h3>
+                            <div class="title row">
+                              <h3 class="box-title">Thông Tin Nhân Viên CSKH</h3>
+                              <!-- Button trigger modal -->                          
+                              <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createRequestModal">
+                                <iconify-icon icon="material-symbols:add-box"></iconify-icon>Thêm nhân viên
+                              </button>
+                            </div>
                             <div class="table-responsive">
                                 <table class="table text-nowrap">
                                     <thead>
@@ -63,6 +111,8 @@
                                             <th>Địa Chỉ</th>
                                             <th>Giới Tính</th>
                                             <th>Ngày Sinh</th>
+                                            <th>Tình trạng</th>
+                                            <th>Tác vụ</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -74,6 +124,10 @@
                                         $i = 0;
                                         $output = '';
                                         while($rowserviceStaff = $sqlserviceStaff->fetch_assoc()){
+                                            $tmp = "Đang làm";
+                                            if ($rowserviceStaff['still_working'] == 0){
+                                              $tmp = "Đã nghỉ";
+                                            }
                                             $i++;
                                             $output .= '<tr> 
                                             <td>'.$i.'</td>
@@ -81,7 +135,24 @@
                                             <td>'.$rowserviceStaff['name'].'</td>
                                             <td>'.$rowserviceStaff['address'].'</td>
                                             <td>'.$rowserviceStaff['gender'].'</td>
-                                            <td>'.$rowserviceStaff['dob'].'</td>';
+                                            <td>'.$rowserviceStaff['dob'].'</td>
+                                            <td>'.$tmp.'</td>';
+                                            if($rowserviceStaff['still_working'] == 1){
+                                              $output.= '
+                                                      <td style = "font-size: 18px">
+                                                          <button onclick="document.getElementById(\'inputIDtoggle\').value = '.$rowserviceStaff['staff_id'].'" type="button" data-toggle="modal" data-target="#toggleRequestModal" class="btn btn-danger"><iconify-icon icon="healthicons:yes"></iconify-icon></button>
+                                                          <button onclick="document.getElementById(\'inputIDxoa\').value = '.$rowserviceStaff['staff_id'].'" type="button" data-toggle="modal" data-target="#deleteRequestModal" class="btn btn-danger deletecourse" style="color: #fff"><iconify-icon icon="mdi:trash"></iconify-icon></button>
+                                                        </td>
+                                                      </tr>';
+                                            }
+                                            else {
+                                              $output.= '
+                                                      <td style = "font-size: 18px">
+                                                          <button onclick="document.getElementById(\'inputIDtoggle\').value = '.$rowserviceStaff['staff_id'].'" type="button" data-toggle="modal" data-target="#toggleRequestModal" class="btn btn-success"><iconify-icon icon="healthicons:yes"></iconify-icon></button>
+                                                          <button onclick="document.getElementById(\'inputIDxoa\').value = '.$rowserviceStaff['staff_id'].'" type="button" data-toggle="modal" data-target="#deleteRequestModal" class="btn btn-danger deletecourse" style="color: #fff"><iconify-icon icon="mdi:trash"></iconify-icon></button>
+                                                        </td>
+                                                      </tr>';
+                                            }                                      
                                         }
                                         echo $output;
                                       }
@@ -97,21 +168,51 @@
         </div>
       </div>
       <!-- Delete Request Modal -->
-      <div class="modal fade" id="deleteCourseModal" tabindex="-1" role="dialog" aria-labelledby="deleteCourseModalLabel" aria-hidden="true">
+      <div class="modal fade" id="deleteRequestModal" tabindex="-1" role="dialog" aria-labelledby="deleteRequestModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Xoá Yêu Cầu</h5>
+              <h5 class="modal-title" id="exampleModalLabel">Xoá Nhân Viên</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
             <div class="modal-body">
-              Bạn có chắc sẽ xoá khoá học chứ ?
+              Bạn có chắc sẽ xoá nhân viên này chứ ?
+              <form action="" method="post">
+                <div class="form-group">
+                  <input id="inputIDxoa" type="hidden" name="inputIDxoa" value="">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                  <button type="submit" name = "submitdelete" class="btn btn-danger">Yes</button>
+                </div>
+              </form>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-danger">Yes</button>
+          </div>
+        </div>
+      </div>
+      <!-- Toggle Modal -->
+      <div class="modal fade" id="toggleRequestModal" tabindex="-1" role="dialog" aria-labelledby="toggleRequestModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Thay Đổi Tình Trạng Nhân Viên</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              Bạn có chắc sẽ thay đổi tình trạng nhân viên này không ?
+              <form action="" method="post">
+                <div class="form-group">
+                  <input id="inputIDtoggle" type="hidden" name="inputIDtoggle" value="">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                  <button type="submit" name = "submittoggle" class="btn btn-danger">Yes</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -121,7 +222,7 @@
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="createRequestModalTitle">Tạo Yêu Cầu</h5>
+              <h5 class="modal-title" id="createRequestModalTitle">Thêm nhân viên</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -130,21 +231,36 @@
               <form action="" method="post">
                 <div class="form-group">
                   <label for="inputName">Họ và Tên</label>
-                  <input type="text" class="form-control" id="inputName" placeholder="Hồ Hoàng Huy">
+                  <input type="text" class="form-control" id="inputName" name="inputName" placeholder="">
                 </div>
                 <div class="form-group">
-                  <label for="inputID">ID Khoá Học</label>
-                  <input type="number" class="form-control" id="inputEmail" placeholder="">
+                  <label for="gender">Giới tính</label>
+                  <select name="gender" id="gender">
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                  </select>
                 </div>
                 <div class="form-group">
-                  <label for="inputText">Nội dung</label>
-                  <input type="text" style="height: 200px" class="form-control" id="inputText" placeholder="">
+                  <label for="inputDate">Ngày sinh</label>
+                  <input type="date" class="form-control" id="inputDate" name="inputDate" placeholder="">
+                </div>
+                <div class="form-group">
+                  <label for="inputPhone">Số điện thoại</label>
+                  <input type="number" class="form-control" id="inputPhone" name="inputPhone" placeholder="">
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail">Email</label>
+                  <input type="email" class="form-control" id="inputEmail" name="inputEmail" placeholder="">
+                </div>
+                <div class="form-group">
+                  <label for="inputAddress">Địa chỉ</label>
+                  <input type="text" class="form-control" id="inputAddress" name="inputAddress" placeholder="">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                  <button type="submit" name="createCSKH" class="btn btn-primary">Thêm nhân viên</button>
                 </div>
               </form>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Save changes</button>
             </div>
           </div>
         </div>

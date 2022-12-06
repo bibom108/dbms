@@ -13,8 +13,7 @@
                     </nav>
             </div>
             <div class="col-3 row button-bar">
-                <div class="login" onclick="window.location.assign('./login.php');">Đăng nhập</div>
-                <div class="signup" onclick="window.location.assign('./register.php');">Đăng ký</div>   
+                <div class="login" onclick="window.location.assign('./home.php');">Đăng nhập</div>
             </div>
         </div>
     </div>

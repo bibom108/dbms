@@ -2,18 +2,29 @@
 <?php
     session_start();
     include('../config/ketnoi.php');
+    
     //giả sử login với 1 id là giáo viên 
     $staffid = '5511211';
-    if (true) {
+    if (isset($_SESSION['id']) and $_SESSION['type'] == 'Giáo viên') {
     }
     else {
-        header('Location:../login.php');
+      header('Location:./profile.php');
     }
 
     /*
             MỤC ĐÍCH PAGE NÀY
             SHOW KẾT QUẢ ĐÁNH GIÁ CỦA GIÁO VIÊN ĐANG ĐĂNG NHẬP
     */
+
+    if(isset($_POST['submitchange'])){
+      $course_id = $_POST['inputIDcourse'];
+      $student_id = $_POST['inputIDstudent'];
+      $score = $_POST['inputScore'];
+      $com = $_POST['inputText'];
+
+      $query = "UPDATE result SET score = '{$score}', comment = '{$com}'  WHERE student_id='{$student_id}' AND student_id='{$student_id}'";
+      $res = $con->query($query);
+    }
 ?>
 <!doctype html>
 <html lang="en">
@@ -48,9 +59,6 @@
           <?php require "./partial/nav-bar.php"?>
         </div>
         <div class="col-9">
-          <div class="link row">
-              <div class="text">Kết quả khoá học</div>
-          </div>
           <div class="wrapper-content row">
             <div class="container-fluid">
                 <div class="row">
@@ -58,9 +66,9 @@
                         <div class="white-box">
                           <div class="title row">
                             <h3 class="box-title">Kết quả</h3> 
-                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createModal">
+                            <!-- <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createModal">
                               <iconify-icon icon="material-symbols:add-box"></iconify-icon>Tạo kết quả
-                            </button>                         
+                            </button>                          -->
                           </div>
                             <div class="table-responsive">
                                 <table class="table text-nowrap">
@@ -100,8 +108,8 @@
                                             <td>'.$rowresult['score'].'</td>
                                             <td>'.$rowresult['comment'].'</td>'; 
                                             $output.= '<td style = "font-size: 18px">
-                                                <button type="button" data-toggle="modal" data-target="#editModal" class="btn btn-success"><iconify-icon icon="material-symbols:edit"></iconify-icon></button>
-                                                <button type="button" data-toggle="modal" data-target="#deleteModal" class="btn btn-danger deletecourse" style="color: #fff"><iconify-icon icon="mdi:trash"></iconify-icon></button>
+                                                <button onclick="document.getElementById(\'inputIDcourse\').value = '.$rowresult['course_id'].'; document.getElementById(\'inputIDstudent\').value = '.$rowresult['student_id'].'" type="button" data-toggle="modal" data-target="#editModal" class="btn btn-success"><iconify-icon icon="material-symbols:edit"></iconify-icon></button>
+                                                
                                               </td>
                                             </tr>';    
                                           }                                     
@@ -179,7 +187,7 @@
           </div>
         </div>
       </div>
-      <!-- Accept Request Modal -->
+      <!-- Edit Request Modal -->
       <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalTitle" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -192,30 +200,24 @@
             <div class="modal-body">
               <form action="" method="post">
                 <div class="form-group">
-                  <label for="inputName">Họ và Tên</label>
-                  <input type="text" class="form-control" id="inputName" placeholder="Hồ Hoàng Huy">
+                  <input type="hidden" class="form-control" id="inputIDcourse" name="inputIDcourse" placeholder="">
                 </div>
                 <div class="form-group">
-                  <label for="inputID">ID Khoá Học</label>
-                  <input type="number" class="form-control" id="inputEmail" placeholder="">
-                </div>
-                <div class="form-group">
-                  <label for="inputID">ID Học Viên</label>
-                  <input type="number" class="form-control" id="inputEmail" placeholder="">
+                  <input type="hidden" class="form-control" id="inputIDstudent" name="inputIDstudent" placeholder="">
                 </div>
                 <div class="form-group">
                   <label for="inputID">Điểm</label>
-                  <input type="number" class="form-control" id="inputEmail" placeholder="">
+                  <input type="number" class="form-control" id="inputScore" name="inputScore" placeholder="">
                 </div>
                 <div class="form-group">
                   <label for="inputText">Đánh giá</label>
-                  <input type="text" style="height: 200px" class="form-control" id="inputText" placeholder="">
+                  <input type="text" style="height: 200px" class="form-control" id="inputText" name="inputText" placeholder="">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                  <button type="submit" name="submitchange" class="btn btn-primary">Lưu thay đổi</button>
                 </div>
               </form>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Save changes</button>
             </div>
           </div>
         </div>

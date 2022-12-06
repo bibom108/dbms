@@ -2,6 +2,37 @@
     session_start();
     include('../config/ketnoi.php');
 
+    if (isset($_SESSION['id']) and ($_SESSION['type'] == 'Quản lý khóa học' or $_SESSION['type'] == 'Giáo viên')) {
+    }
+    else {
+      header('Location:./profile.php');
+    }
+
+    if (isset($_POST['addcourse'])){
+      $name = $_POST['inputName'];
+      $level = $_POST['inputLevel'];
+      $len = $_POST['inputLength'];
+      $startdate = $_POST['inputStartDate'];
+      $time = $_POST['inputTime'];
+      $date = $_POST['inputDate'];
+      $man = $_POST['inputManager'];
+      $fee = $_POST['inputFee'];
+
+      while (true){
+        $id = rand(1000000, 1999999);
+        $query = "SELECT * FROM course WHERE course_id = '{$id}'";
+        $res = $con->query($query);
+        if($res->num_rows == 0){
+          break;
+        }
+      }
+      
+      $query = "INSERT INTO course(course_id, start_date, level, name, length, time, manager_id, fee) VALUES('{$id}', '{$startdate}', '{$level}', '{$name}', '{$len}', '{$time}', '{$man}', '{$fee}')";
+      $con->query($query);
+      $query = "INSERT INTO schedule(course_id, class_date) VALUES('{$id}', '{$date}')";
+      $con->query($query);
+    }
+
     if (true) {
       //Kiểm tra action và thực hiện lọc
       if(!empty($_GET['action']) && $_GET['action'] == 'search' && !empty($_POST)){
@@ -24,20 +55,32 @@
           SHOW TẤT CẢ CÁC KHOÁ HỌC HIỆN CÓ TRONG HỆ THỐNG
     */
     if(!empty($where)){
-      $sqlcourse =  $con->query("SELECT * FROM course 
-      INNER JOIN(
-        SELECT * FROM schedule
-      ) AS temp
-      ON temp.course_id = course.course_id
-      WHERE (".$where.");
+      $sqlcourse =  $con->query("
+      SELECT *, co.name as course_name, staff.name as staff_name FROM
+      (
+        SELECT temp.class_date, course.* FROM course
+        INNER JOIN(
+          SELECT * FROM schedule
+        ) temp
+        ON temp.course_id = course.course_id
+        WHERE (".$where.")
+      ) co
+      INNER JOIN staff
+      ON co.manager_id = staff.staff_id
     ");
     }
     else {
-      $sqlcourse =  $con->query("SELECT * FROM course 
-      INNER JOIN(
-        SELECT * FROM schedule
-      ) AS temp
-      ON temp.course_id = course.course_id
+      $sqlcourse =  $con->query("
+        SELECT *, co.name as course_name, staff.name as staff_name FROM
+        (
+          SELECT temp.class_date, course.* FROM course
+          INNER JOIN(
+            SELECT * FROM schedule
+          ) temp
+          ON temp.course_id = course.course_id
+        ) co
+        INNER JOIN staff
+        ON co.manager_id = staff.staff_id
     ");
     }
 ?>
@@ -74,10 +117,6 @@
           <?php require "./partial/nav-bar.php"?>
         </div>
         <div class="col-9">
-          <div class="link row">
-              <div class="text">Khoá học của tôi</div>
-
-          </div>
           <div class="wrapper-content row">
             <div class="container-fluid">
                 <div class="row">
@@ -112,7 +151,9 @@
                                             <th>Ngày Bắt Đầu</th>
                                             <th>Giờ Học</th>
                                             <th>Ngày Học</th>
-                                            <th>Tác vụ</th>
+                                            <th>Học Phí</th>
+                                            <th>Người quản lí</th>
+                                            <!-- <th>Tác vụ</th> -->
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -126,18 +167,20 @@
                                             $output .= '<tr> 
                                             <td>'.$i.'</td>
                                             <td>'.$rowcourse['course_id'].'</td>
-                                            <td>'.$rowcourse['name'].'</td>
+                                            <td>'.$rowcourse['course_name'].'</td>
                                             <td>'.$rowcourse['level'].'</td>
                                             <td>'.$rowcourse['length'].'</td>
                                             <td>'.$rowcourse['start_date'].'</td>
                                             <td>'.$rowcourse['time'].'</td>
-                                            <td>'.$rowcourse['class_date'].'</td>';
+                                            <td>'.$rowcourse['class_date'].'</td>
+                                            <td>'.$rowcourse['fee'].'</td>
+                                            <td>'.$rowcourse['staff_name'].'</td>';
                                              //khoá học kết thúc chưa nếu chưa thì có quyền huỷ khoá học nếu rồi thì được quyền đánh giá
                                             if(true){
-                                                $output.= '<td>
-                                                              <button type="button" data-toggle="modal" data-target="#deleteModal" class="btn btn-danger deletecourse" style="color: #fff"><iconify-icon icon="mdi:trash"></iconify-icon></button>
-                                                              <button type="button" data-toggle="modal" data-target="#editModal" class="btn btn-success"><iconify-icon icon="material-symbols:edit"></iconify-icon></button>
-                                                            </td>
+                                                $output.= '<!-- <td>
+                                                <button type="button" data-toggle="modal" data-target="#editModal" class="btn btn-success"><iconify-icon icon="material-symbols:edit"></iconify-icon></button>
+                                                <button type="button" data-toggle="modal" data-target="#deleteModal" class="btn btn-danger deletecourse" style="color: #fff"><iconify-icon icon="mdi:trash"></iconify-icon></button>
+                                                            </td> -->
                                                         </tr>';
                                             }
                                           }
@@ -189,33 +232,41 @@
               <form action="" method="post">
                 <div class="form-group">
                   <label for="inputName">Tên khoá học</label>
-                  <input type="text" class="form-control" id="inputName" placeholder="Hồ Hoàng Huy">
+                  <input type="text" class="form-control" name="inputName" placeholder="">
                 </div>
                 <div class="form-group">
-                  <label for="inputName">Cấp độ</label>
-                  <input type="text" class="form-control" id="inputName" placeholder="Hồ Hoàng Huy">
+                  <label for="inputLevel">Cấp độ</label>
+                  <input type="text" class="form-control" name="inputLevel" value="Beginner">
                 </div>
                 <div class="form-group">
-                  <label for="inputName">Thời lượng</label>
-                  <input type="number" class="form-control" id="inputName" placeholder="Hồ Hoàng Huy">
+                  <label for="inputLength">Thời lượng</label>
+                  <input type="number" class="form-control" name="inputLength" value="10">
                 </div>
                 <div class="form-group">
-                  <label for="inputName">Ngày bắt đầu</label>
-                  <input type="date" class="form-control" id="inputName" placeholder="Hồ Hoàng Huy">
+                  <label for="inputStartDate">Ngày bắt đầu</label>
+                  <input type="date" class="form-control" name="inputStartDate" placeholder="">
                 </div>
                 <div class="form-group">
-                  <label for="inputName">Giờ học</label>
-                  <input type="time" class="form-control" id="inputName" placeholder="Hồ Hoàng Huy">
+                  <label for="inputTime">Giờ học</label>
+                  <input type="time" class="form-control" name="inputTime" placeholder="">
                 </div>
                 <div class="form-group">
-                  <label for="inputName">Ngày học</label>
-                  <input type="text" class="form-control" id="inputName" placeholder="Hồ Hoàng Huy">
+                  <label for="inputDate">Ngày học</label>
+                  <input type="text" class="form-control" name="inputDate" value="Thứ 5">
+                </div>
+                <div class="form-group">
+                  <label for="inputFee">Học phí</label>
+                  <input type="number" class="form-control" name="inputFee" placeholder="">
+                </div>
+                <div class="form-group">
+                  <label for="inputManager">ID Người quản lí khóa học</label>
+                  <input type="text" class="form-control" name="inputManager" placeholder="">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                  <button type="submit" name="addcourse" class="btn btn-primary">Thêm khóa học</button>
                 </div>
               </form>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Save changes</button>
             </div>
           </div>
         </div>

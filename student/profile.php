@@ -2,6 +2,14 @@
     session_start();
     include('../config/admin.php');
 
+    if(isset($_POST['submit'])){
+      $name = $_POST['inputFname'];
+      $address = $_POST['inputAddress'];
+
+      $query = "UPDATE student SET name = '{$name}', address = '{$address}' WHERE student_id = '{$_SESSION['idStudent']}'";
+      $con->query($query);
+    }
+
     if (isset($_SESSION['idStudent'])) {
         $sqlstudent =  $con->query("SELECT * FROM student WHERE student_id = '{$_SESSION['idStudent']}'");
         $rowstudent = $sqlstudent->fetch_assoc();
@@ -59,25 +67,25 @@
           </div>
           <div class="wrapper-content row"> 
             <div class="col-9">
-              <form>
+              <form action="" method="post">
                 <div class="form-row">
                   <div class="form-group col-md-6">
                     <label for="inputFname">Fullname: </label>
-                    <input type="text" class="form-control" id="inputFname" value="<?php echo $rowstudent['name'] ?>">
+                    <input type="text" class="form-control" name="inputFname" id="inputFname" value="<?php echo $rowstudent['name'] ?>">
                   </div>
                   <div class="form-group col-md-6">
                     <label for="inputDoB">Date of Birth</label>
-                    <input type="date" class="form-control" id="inputDoB" value="<?php echo $rowstudent['dob'] ?>" >
+                    <input type="date" class="form-control" id="inputDoB" readonly value="<?php echo $rowstudent['dob'] ?>" >
                   </div>
                 </div>
                 <div class="form-group">
                   <label for="inputEmail">Email</label>
-                  <input type="text" class="form-control" id="inputEmail" value="<?php echo $rowstudentcontact['email'] ?>">
+                  <input type="text" class="form-control" id="inputEmail" readonly value="<?php echo $rowstudentcontact['email'] ?>">
                 </div>
                 <div class="form-row">
                   <div class="form-group col-md-12">
                     <label for="inputPhone">Phone number: </label>
-                    <input type="number" class="form-control" id="inputPhone" value="<?php echo $rowstudentcontact['phone'] ?>">
+                    <input type="number" class="form-control" id="inputPhone" readonly value="<?php echo $rowstudentcontact['phone'] ?>">
                   </div>
                   <!-- <div class="form-group col-md-6 gender">
                     <div class="form-check form-check-inline">
@@ -100,7 +108,7 @@
                 </div>
                 <div class="form-group">
                   <label for="inputAddress">Address</label>
-                  <input type="text" class="form-control" id="inputAddress"  value="<?php echo $rowstudent['address'] ?>" >
+                  <input type="text" class="form-control" name="inputAddress" id="inputAddress"  value="<?php echo $rowstudent['address'] ?>" >
                 </div>
                 <button type="submit" id = "liveToastBtn" name ="submit" class="btn btn-primary">CẬP NHẬT THÔNG TIN</button>
               </form>
