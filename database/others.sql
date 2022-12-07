@@ -185,13 +185,14 @@ BEGIN
 END $$
 DELIMITER ;
 
--- Xóa yêu cầu đăng kí/ hủy khóa học
+-- Xóa yêu cầu đăng kí/ hủy khóa học 
 DELIMITER $$
 CREATE PROCEDURE DeleteAcceptRequest(studentID CHAR(7), courseID CHAR(7))
 BEGIN
     DELETE FROM accept WHERE student_id=studentID AND course_id=courseID;
 END $$
 DELIMITER ;
+
 
 -- Xóa yêu cầu khác với một khóa học
 DELIMITER $$
@@ -227,7 +228,13 @@ BEGIN
 END $$
 DELIMITER ;
 
-
+-- Chấp nhận yêu cầu khác về khoá học của một học viên
+DELIMITER $$
+CREATE PROCEDURE AcceptRequest(studentID CHAR(7), courseID CHAR(7))
+BEGIN
+    UPDATE request SET request.status = 1 WHERE student_id = studentID AND course_id= courseID AND status = 0;
+END $$
+DELIMITER ;
 
 -- TRIGGERS
 -- Tự động sửa sức chứa của phòng học cho hợp lệ

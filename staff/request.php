@@ -41,23 +41,53 @@
         //select $sqlcourse to render 
 
     if(empty($_POST['status']) and !isset($_POST['filter'])){
-      $sqlrequest = $con->query("SELECT request.time, request.content, request.status , student.name as student_name, course.name as course_name
+      $sqlrequest = $con->query("SELECT request.time, request.content, request.status, student.student_id  , student.name as student_name, course.name as course_name, course.course_id
       FROM (request INNER JOIN course ON request.course_id = course.course_id)
       INNER JOIN student ON student.student_id = request.student_id
       ");
     }
     else if ($_POST['status'] == 'a'){
-      $sqlrequest = $con->query("SELECT request.time, request.content, request.status , student.name as student_name, course.name as course_name
+      $sqlrequest = $con->query("SELECT request.time, request.content, request.status ,student.student_id , student.name as student_name, course.name as course_name, course.course_id
       FROM (request INNER JOIN course ON request.course_id = course.course_id)
       INNER JOIN student ON student.student_id = request.student_id
       ");
     }
     else {
-      $sqlrequest = $con->query("SELECT request.time, request.content, request.status , student.name as student_name, course.name as course_name
+      $sqlrequest = $con->query("SELECT request.time, request.content, request.status ,student.student_id  , student.name as student_name, course.name as course_name, course.course_id
       FROM (request INNER JOIN course ON request.course_id = course.course_id)
       INNER JOIN student ON student.student_id = request.student_id
       WHERE request.status = '{$_POST['status']}'
       ");   
+    }
+    if(isset($_POST['submitxoa'])){
+      $id = $_POST['inputIDcourse'];
+      $id_student = $_POST['inputIDstudent'];
+      // Kiểm tra sv có học khóa này ko
+      $query = "SELECT * FROM study WHERE student_id = '{$id_student}' AND course_id = '{$id}'";
+      $res = $student->query($query);
+      if ($res->num_rows > 0) {
+        // Xóa yêu cầu
+        $query = "CALL DeleteRequest('{$id_student}', '{$id}')";
+        //$query = "DELETE FROM request WHERE student_id = '{$id_student}' AND course_id='{$id}' AND status = 0";
+        $student->query($query);
+      }
+      else {
+      }
+    }
+    if(isset($_POST['submitduyet'])){
+      $id = $_POST['acceptIDcourse'];
+      $id_student = $_POST['acceptIDstudent'];
+      // Kiểm tra sv có học khóa này ko
+      $query = "SELECT * FROM study WHERE student_id = '{$id_student}' AND course_id = '{$id}'";
+      $res = $student->query($query);
+      if ($res->num_rows > 0) {
+        // Chấp nhận yêu cầu
+        $query = "CALL AcceptRequest('{$id_student}', '{$id}')";
+        //$query = "UPDATE request SET request.status = '1' WHERE student_id = '{$id_student}' AND course_id='{$id}' AND status = 0";
+        $student->query($query);
+      }
+      else {
+      }
     }
 ?>
 <!doctype html>
@@ -148,8 +178,12 @@
                                               $output.= '
                                                       <td>Chưa duyệt</td>
                                                       <td style = "font-size: 18px">
-                                                          <button type="button" data-toggle="modal" data-target="#acceptRequestModal" class="btn btn-success"><iconify-icon icon="healthicons:yes"></iconify-icon></button>
-                                                          <button type="button" data-toggle="modal" data-target="#deleteRequestModal" class="btn btn-danger deletecourse" style="color: #fff"><iconify-icon icon="mdi:trash"></iconify-icon></button>
+                                                          <button type="button" data-toggle="modal" 
+                                                          onclick="document.getElementById(\'acceptIDcourse\').value = '.$rowrequest['course_id'].'; document.getElementById(\'acceptIDstudent\').value = '.$rowrequest['student_id'].';"
+                                                          data-target="#acceptRequestModal" class="btn btn-success"><iconify-icon icon="healthicons:yes"></iconify-icon></button>
+                                                          <button type="button" 
+                                                          onclick="document.getElementById(\'inputIDcourse\').value = '.$rowrequest['course_id'].'; document.getElementById(\'inputIDstudent\').value = '.$rowrequest['student_id'].';"
+                                                          data-toggle="modal" data-target="#deleteRequestModal" class="btn btn-danger deletecourse" style="color: #fff"><iconify-icon icon="mdi:trash"></iconify-icon></button>
                                                         </td>
                                                       </tr>';
                                           }
@@ -221,10 +255,16 @@
             <div class="modal-body">
               Bạn có chắc sẽ xoá yêu cầu chứ ?
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-danger">Yes</button>
-            </div>
+            <form action="" method="post">
+                <div class="form-group">
+                  <input id="inputIDstudent" type="hidden" name="inputIDstudent" value="">
+                  <input id="inputIDcourse" type="hidden" name="inputIDcourse" value="">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button name = "submitxoa" type="submit" class="btn btn-danger">Yes</button>
+                </div>
+            </form>
           </div>
         </div>
       </div>
@@ -241,10 +281,16 @@
             <div class="modal-body">
               Bạn có chắc duyệt yêu cầu chứ ?
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-success">Yes</button>
-            </div>
+            <form action="" method="post">
+                <div class="form-group">
+                  <input id="acceptIDstudent" type="hidden" name="acceptIDstudent" value="">
+                  <input id="acceptIDcourse" type="hidden" name="acceptIDcourse" value="">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button name = "submitduyet" type="submit" class="btn btn-danger">Yes</button>
+                </div>
+            </form>
           </div>
         </div>
       </div>
@@ -255,5 +301,10 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script>
+      function get_IDCourse_IDStudent_Delete(){
+
+      }
+    </script>
   </body>
 </html>

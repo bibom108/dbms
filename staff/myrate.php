@@ -17,7 +17,7 @@
       $course_id = $_POST['inputIDcourse'];
       // Xóa quản lý chi nhánh trong staff
       $query = "DELETE FROM review WHERE student_id='{$student_id}' AND course_id='{$course_id}'";
-      $con->query($query);
+      //$con->query($query);
     }
 ?>
 <!doctype html>
