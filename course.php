@@ -56,7 +56,7 @@
             <div class="content course" style="margin: auto;">
                 <h2 style="text-align: center; width: 100%; color: white; margin: 10px 0;"></h2>
                 <?php 
-                    $sqlcourse = $con->query("SELECT * FROM course");
+                    $sqlcourse = $con->query("SELECT * FROM course LIMIT 20");
                     if ($sqlcourse->num_rows > 0) {
                         $i = 0;
                         $output ='';
