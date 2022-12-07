@@ -116,7 +116,23 @@ BEGIN
 END $$
 DELIMITER ;
 
-
+--Bổ sung:
+-- Trả về thông tin kết quả các khóa học (Tên,ID khóa học, tên giáo viên, điểm kết quả và nhận xét của giáo viên)
+DELIMITER $$
+CREATE FUNCTION GetCourseofStudent(studentID CHAR(7))
+RETURNS INT
+DETERMINISTIC
+READS SQL DATA
+BEGIN
+    DECLARE res INT DEFAULT 0;
+    SET res=(SELECT result.score,result.comment, course.course_id , course.name AS course_name, staff.name AS teacher_name
+                                          FROM (result INNER JOIN course ON result.course_id = course.course_id)
+                                          INNER JOIN (
+                                            teach INNER JOIN staff ON teach.teacher_id = staff.staff_id
+                                          ) ON teach.course_id = result.course_id AND result.student_id = studentID);
+    RETURN res;
+END $$
+DELIMITER ;
 
 -- PROCEDURES
 -- Thêm đánh giá học viên với khóa học
