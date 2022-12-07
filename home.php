@@ -62,7 +62,7 @@
                 $i = 0;
                 $output='';
                 //$sqlcourse = mysqli_query($con,"SELECT * FROM course");
-                $sqlcourse = $con->query("SELECT * FROM course");
+                $sqlcourse = $con->query("SELECT * FROM course LIMIT 10");
                 //$rowcourse = mysqli_fetch_assoc($sqlcourse);
                 
                 if ($sqlcourse->num_rows > 0) {
