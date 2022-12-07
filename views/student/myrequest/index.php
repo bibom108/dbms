@@ -1,7 +1,9 @@
 <?php
-    session_start();
-    include('../config/student.php');
-
+    require_once('./models/connection.php');
+    
+    $con = DB::getInstance();
+    $student = DB::getInstanceforStudent();
+    
     if(isset($_POST['submitcreate'])){
       $id = $_POST['inputIDcreate'];
       $text = $_POST['inputTextcreate'];
@@ -36,8 +38,7 @@
       }
       else {
         // Xóa yêu cầu trong request table
-        $query = "CALL DeleteRequest('{$_SESSION['idStudent']}', '{$id}')";
-        //$query = "DELETE FROM request WHERE student_id='{$_SESSION['idStudent']}' AND course_id='{$id}' AND status = 0";
+        $query = "DELETE FROM request WHERE student_id='{$_SESSION['idStudent']}' AND course_id='{$id}' AND status = 0";
         $student->query($query);
       }
     }
@@ -50,18 +51,11 @@
       $res = $student->query($query);
       if ($res->num_rows > 0) {
         // Sửa yêu cầu
-        $query = "CALL ChangeRequest('{$_SESSION['idStudent']}', '{$id}', '{$text}')";
-        //$query = "UPDATE request SET content = '{$text}' WHERE student_id = '{$_SESSION['idStudent']}' AND course_id = '{$id}' AND status = 0";
+        $query = "UPDATE request SET content = '{$text}' WHERE student_id = '{$_SESSION['idStudent']}' AND course_id = '{$id}' AND status = 0";
         $student->query($query);
       }
       else {
       }
-    }
-
-    if (isset($_SESSION['idStudent'])) {
-    }
-    else {
-        header('Location:../login.php');
     }
 ?>
 <!doctype html>
@@ -71,14 +65,14 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="../css/allcss.css">
-    <link rel="stylesheet" href="../css/header.css">
-    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="public/assets/css/allcss.css">
+    <link rel="stylesheet" href="public/assets/css/header.css">
+    <link rel="stylesheet" href="public/assets/css/footer.css">
     
-    <link rel="stylesheet" href="./css/header.css">
-    <link rel="stylesheet" href="./css/nav-bar.css">
-    <link rel="stylesheet" href="./css/profile.css">
-    <link rel="stylesheet" href="./css/mycourse.css">
+    <link rel="stylesheet" href="public/assets/student/css/header.css">
+    <link rel="stylesheet" href="public/assets/student/css/nav-bar.css">
+    <link rel="stylesheet" href="public/assets/student/css/profile.css">
+    <link rel="stylesheet" href="public/assets/student/css/mycourse.css">
     <!-- Icon CDN -->
     <script src="https://code.iconify.design/iconify-icon/1.0.1/iconify-icon.min.js"></script>
     <!-- Bootstrap CSS -->
@@ -90,16 +84,16 @@
     <link href="https://fonts.googleapis.com/css?family=Rubik&display=swap" rel="stylesheet">
   </head>
   <body>
-    <?php require "./partial/header-logined.php"?>
+  <?php require "./views/student/header-logined.php" ?>
     <div class="content container-fluid !direction !spacing">
       <div class="row">
         <div class="col-3 navigation-bar">
-          <?php require "./partial/nav-bar.php"?>
+          <?php require "./views/student/nav-bar.php" ?>
         </div>
         <div class="col-9">
           <div class="link row">
               <div class="text">Yêu cầu của tôi</div>
-              <button type="button" class="btn btn-primary" onclick="window.location.assign('../course.php');">Đăng ký thêm khoá học</button>
+              <button type="button" class="btn btn-primary" onclick="window.location.assign('index.php?page=student&controller=course&action=index');">Đăng ký thêm khoá học</button>
           </div>
           <div class="wrapper-content row">
             <div class="container-fluid">
@@ -291,7 +285,7 @@
         </div>
       </div>
     </div>
-    <?php require "../partial/footer.php"?>
+    <?php require "./views/student/footer.php" ?>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

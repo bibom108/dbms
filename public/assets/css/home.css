@@ -1,0 +1,134 @@
+.landing {
+  min-height: 100vh;
+  background-image: url("../images/HeroImage.png");
+}
+.introduce-text {
+  margin-top: 70px;
+}
+.introduce-text .line-1 {
+  color: white;
+  font-size: 80px;
+  font-weight: 700;
+}
+.introduce-text .line-2 {
+  color: white;
+  font-size: 42px;
+}
+.line-2 {
+  margin-bottom: 29px;
+}
+
+/* COURSECTION */
+.content > div {
+  margin-top: 50px;
+}
+.course-section .title,
+.instructor .title {
+  text-align: center;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 77px;
+  line-height: 100%;
+  /* identical to box height, or 77px */
+
+  letter-spacing: 0.05em;
+  color: white;
+  -webkit-text-stroke-width: 2px;
+  -webkit-text-stroke-color: var(--main-color);
+}
+
+.course-item {
+  font-size: var(--small-text);
+  margin-top: 50px;
+}
+.course-item .text > div {
+  margin-top: 10px;
+}
+.course-item .title-course {
+  font-size: var(--medium-text);
+  font-weight: bold;
+  line-height: 110%;
+  height: 55px !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1; /*số dòng muốn hiện */
+}
+.course-item .description-course {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #4d4d4d;
+}
+
+/*         COUNTER        */
+.counter {
+  background-color: rgba(86, 204, 242, 0.3);
+  font-size: 30px;
+  text-align: center;
+  padding: 50px 0;
+}
+.counter .row {
+  justify-content: space-between;
+}
+.item .image {
+  margin-bottom: 20px;
+}
+.item .text .amount {
+  color: var(--primary-color);
+  font-size: 45px;
+  font-weight: 900;
+}
+.item .text .title {
+  color: var(--primary-color-light);
+}
+.item .description {
+  font-size: var(--small-text);
+  margin-top: 15px;
+}
+
+/*       INSTRUCTOR       */
+.instructor .row {
+  width: 1131px;
+  margin: auto;
+}
+.instructor .item > div:not(:last-child) {
+  margin-bottom: 10px;
+}
+.instructor .item {
+  margin-top: 70px;
+}
+.instructor .item .text {
+  text-align: center;
+  font-size: var(--medium-text);
+}
+
+/*     LETTER      */
+.letter {
+  background-color: rgba(86, 204, 242, 0.3);
+  font-size: 30px;
+  padding: 50px 0;
+}
+.letter .text {
+  color: var(--primary-color);
+}
+.letter .text .line-1 {
+  font-size: 49px;
+}
+.letter .text .line-2 {
+  font-size: 80px;
+  font-weight: bold;
+}
+.letter .input label {
+  color: var(--primary-color-light);
+  font-size: 25px;
+}
+.letter .input input {
+  border-radius: 0;
+  margin-bottom: 10px;
+}
+.letter .input button {
+  background-color: var(--primary-color);
+  width: 100%;
+  border-radius: 0;
+}

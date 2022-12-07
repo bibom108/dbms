@@ -153,7 +153,7 @@ DELIMITER ;
 
 -- Xóa đánh giá học viên với khóa học
 DELIMITER $$
-CREATE PROCEDURE ChangeReview(studentID CHAR(7), courseID CHAR(7), new_content CHAR(100))
+CREATE PROCEDURE DeleteReview(studentID CHAR(7), courseID CHAR(7), new_content CHAR(100))
 BEGIN
     DELETE FROM review WHERE student_id = studentID AND course_id = courseID;
 END $$
