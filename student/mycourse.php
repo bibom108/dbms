@@ -43,7 +43,7 @@
 
     if (isset($_SESSION['idStudent'])) {
       //nhận form bộ lọc và thiết lập where
-      if(!empty($_GET['action']) && $_GET['action'] == 'search' && !empty($_POST)){
+      if(!empty($_GET['action']) && !empty($_POST)){
         $_SESSION['course_filter'] = $_POST;
       }
       if(!empty($_SESSION['course_filter'])){

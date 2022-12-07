@@ -157,6 +157,8 @@
                                               $output.= '<td>
                                                           Đã duyệt
                                                           </td>
+                                                          <td style = "font-size: 18px">
+                                                          </td>
                                                       </tr>';
                                           }
                                         }                                     

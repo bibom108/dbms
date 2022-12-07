@@ -1,60 +1,10 @@
 .header {
-  margin: auto;
-  color: white;
-}
-.header .button-bar {
-  justify-content: end;
-  align-items: center;
-  margin-right: 10px;
-}
-.header .logo {
-  display: flex;
-  align-items: center;
-  font-size: var(--title-text);
-  font-weight: 700;
-}
-.header .button-bar div {
-  font-size: var(--default-text);
-  font-family: "Inter" !important;
-}
-.header .button-bar div:not(:last-child) {
-  margin-right: 25px;
-}
-.search-wrapper {
-  width: 70%;
-  margin: auto;
-  position: relative;
-}
-.search-wrapper input[type="search"] {
-  width: 100%;
-  border-radius: 62.84px;
-  background-color: white;
-}
-.search-wrapper iconify-icon {
-  position: absolute;
-  right: 12.09px;
-  font-size: 25px;
-  color: black;
-}
-.search-wrapper button {
-  position: absolute;
-  right: 0;
-  border-radius: 62.84px;
-  color: white;
-  background-color: var(--main-color);
-  border-color: var(--main-color);
-}
-.search-wrapper button:hover {
-  color: var(--main-color);
-  background-color: white;
-  border-color: var(--main-color);
-}
-
-.button-bar .user {
-  width: 22px;
-  height: 22px;
-  border-radius: 100%;
-  background-color: gray;
+  background-image: linear-gradient(
+    to bottom right,
+    #10203f,
+    #003294,
+    #91ddf9
+  ) !important;
 }
 .header .button-bar .user ul {
   position: absolute;
