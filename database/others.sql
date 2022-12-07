@@ -153,7 +153,7 @@ DELIMITER ;
 
 -- Xóa đánh giá học viên với khóa học
 DELIMITER $$
-CREATE PROCEDURE DeleteReview(studentID CHAR(7), courseID CHAR(7), new_content CHAR(100))
+CREATE PROCEDURE DeleteReview(studentID CHAR(7), courseID CHAR(7))
 BEGIN
     DELETE FROM review WHERE student_id = studentID AND course_id = courseID;
 END $$
@@ -233,6 +233,21 @@ DELIMITER $$
 CREATE PROCEDURE AcceptRequest(studentID CHAR(7), courseID CHAR(7))
 BEGIN
     UPDATE request SET request.status = 1 WHERE student_id = studentID AND course_id= courseID AND status = 0;
+END $$
+DELIMITER ;
+
+-- Xoá đánh giá khoá học của sinh viên
+DELIMITER $$
+CREATE PROCEDURE AcceptRequest(studentID CHAR(7), courseID CHAR(7))
+BEGIN
+    UPDATE request SET request.status = 1 WHERE student_id = studentID AND course_id= courseID AND status = 0;
+END $$
+DELIMITER ;
+-- Xoá kết quả khoá học của học viên
+DELIMITER $$
+CREATE PROCEDURE DeleteResult(studentID CHAR(7), courseID CHAR(7))
+BEGIN
+    DELETE FROM result WHERE student_id = studentID AND course_id= courseID;
 END $$
 DELIMITER ;
 

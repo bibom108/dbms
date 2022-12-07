@@ -15,9 +15,10 @@
     if(isset($_POST['submitdelete'])){
       $student_id = $_POST['inputIDstudent'];
       $course_id = $_POST['inputIDcourse'];
-      // Xóa quản lý chi nhánh trong staff
-      $query = "DELETE FROM review WHERE student_id='{$student_id}' AND course_id='{$course_id}'";
-      //$con->query($query);
+      // Xóa đánh giá khoá học
+      $query = "CALL DeleteReview('{$student_id}' , '{$course_id}')";
+      //$query = "DELETE FROM review WHERE student_id='{$student_id}' AND course_id='{$course_id}'";
+      $con->query($query);
     }
 ?>
 <!doctype html>

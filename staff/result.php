@@ -25,6 +25,13 @@
       $query = "UPDATE result SET score = '{$score}', comment = '{$com}'  WHERE student_id='{$student_id}' AND student_id='{$student_id}'";
       $res = $con->query($query);
     }
+    if(isset($_POST['submitdelete'])){
+      $course_id = $_POST['deleteIDcourse'];
+      $student_id = $_POST['deleteIDstudent'];
+      $query = "CALL DeleteResult('{$student_id}', '{$course_id}')";
+      //$query = "DELETE FROM result WHERE student_id='{$student_id}' AND course_id='{$course_id}'";
+      $res = $con->query($query);
+    }
 ?>
 <!doctype html>
 <html lang="en">
@@ -108,8 +115,8 @@
                                             <td>'.$rowresult['score'].'</td>
                                             <td>'.$rowresult['comment'].'</td>'; 
                                             $output.= '<td style = "font-size: 18px">
-                                                <button onclick="document.getElementById(\'inputIDcourse\').value = '.$rowresult['course_id'].'; document.getElementById(\'inputIDstudent\').value = '.$rowresult['student_id'].'" type="button" data-toggle="modal" data-target="#editModal" class="btn btn-success"><iconify-icon icon="material-symbols:edit"></iconify-icon></button>
-                                                
+                                                <button onclick="document.getElementById(\'editIDcourse\').value = '.$rowresult['course_id'].'; document.getElementById(\'editIDstudent\').value = '.$rowresult['student_id'].'" type="button" data-toggle="modal" data-target="#editModal" class="btn btn-success"><iconify-icon icon="material-symbols:edit"></iconify-icon></button>
+                                                <button onclick="document.getElementById(\'deleteIDstudent\').value = '.$rowresult['student_id'].'; document.getElementById(\'deleteIDcourse\').value = '.$rowresult['course_id'].'" type="button" data-toggle="modal" data-target="#deleteModal" class="btn btn-danger"><iconify-icon icon="mdi:trash"></iconify-icon></button>
                                               </td>
                                             </tr>';    
                                           }                                     
@@ -180,10 +187,16 @@
             <div class="modal-body">
               Bạn có chắc sẽ xoá yêu cầu chứ ?
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-danger">Yes</button>
-            </div>
+            <form action="" method="post">
+                <div class="form-group">
+                  <input id="deleteIDstudent" type="hidden" name="deleteIDstudent" value="">
+                  <input id="deleteIDcourse" type="hidden" name="deleteIDcourse" value="">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                  <button type="submit" name = "submitdelete" class="btn btn-danger">Yes</button>
+                </div>
+              </form>
           </div>
         </div>
       </div>
