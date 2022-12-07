@@ -10,7 +10,8 @@
       $res = $student->query($query);
       if ($res->num_rows > 0) {
         // Sửa đánh giá
-        $query = "UPDATE review SET content = '{$text}' WHERE student_id = '{$_SESSION['idStudent']}' AND course_id = '{$id}'";
+        $query = "CALL ChangeReview('{$_SESSION['idStudent']}', '{$id}', '{$text}')";
+        //$query = "UPDATE review SET content = '{$text}' WHERE student_id = '{$_SESSION['idStudent']}' AND course_id = '{$id}'";
         $student->query($query);
       }
       else {
@@ -100,7 +101,7 @@
                                         $output = '';
                                         $sqlrate = $student->query(" SELECT review.content, review.time , course.name , course.course_id
                                         FROM review, course
-                                        WHERE review.course_id = course.course_id AND review.student_id = '{$_SESSION['idStudent']}'
+                                        WHERE review.course_id = course.course_id AND review.student_id = '{$_SESSION['idStudent']}' AND course.status = 'Finished'
                                         ");
                                         if ($sqlrate->num_rows > 0) {
                                           // output data of each row
